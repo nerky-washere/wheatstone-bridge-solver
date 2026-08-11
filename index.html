@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheatstone Bridge Circuit Solver</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e2e; color: #cdd6f4; padding: 20px; display: flex; justify-content: center; }
+        .card { background-color: #313244; padding: 25px; border-radius: 12px; width: 100%; max-width: 650px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+        h2 { text-align: center; color: #89b4fa; margin-bottom: 5px; }
+        .diagram { background-color: #181825; padding: 15px; border-radius: 8px; font-family: monospace; white-space: pre; color: #a6e3a1; text-align: center; overflow-x: auto; font-size: 13px; margin-bottom: 20px; }
+        .grid-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-size: 14px; margin-bottom: 4px; color: #bac2de; }
+        input { padding: 8px 12px; border-radius: 6px; border: 1px solid #45475a; background-color: #1e1e2e; color: #cdd6f4; font-size: 15px; }
+        input:focus { outline: none; border-color: #89b4fa; }
+        button { width: 100%; margin-top: 20px; padding: 12px; border: none; border-radius: 6px; background-color: #89b4fa; color: #11111b; font-weight: bold; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        button:hover { background-color: #b4befe; }
+        .result-box { margin-top: 20px; padding: 15px; background-color: #181825; border-radius: 8px; border-left: 4px solid #89b4fa; display: none; }
+        .result-box h3 { margin-top: 0; color: #f9e2af; }
+        .result-item { margin: 6px 0; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>WHEATSTONE BRIDGE SOLVER</h2>
+
+    <!-- Sơ đồ ASCII -->
+    <div class="diagram">
+        +----------[ R1 ]----------+----------[ R2 ]----------+
+        |                          |                          |
+        o----+                          |                          +----o
+        (+Vs) |                        [ R5 ]                       |   (GND)
+        |                          |                          |
+        +----------[ R3 ]----------+----------[ R4 ]----------+
+    </div>
+
+    <div class="grid-inputs">
+        <div class="input-group"><label>R1 (Ohm):</label><input type="number" id="r1" value="10"></div>
+        <div class="input-group"><label>R2 (Ohm):</label><input type="number" id="r2" value="20"></div>
+        <div class="input-group"><label>R3 (Ohm):</label><input type="number" id="r3" value="30"></div>
+        <div class="input-group"><label>R4 (Ohm):</label><input type="number" id="r4" value="60"></div>
+        <div class="input-group"><label>R5 (Ohm):</label><input type="number" id="r5" value="50"></div>
+        <div class="input-group"><label>Vs (Volt):</label><input type="number" id="vs" value="12"></div>
+    </div>
+
+    <button onclick="calculateCircuit()">CALCULATE</button>
+
+    <div class="result-box" id="results">
+        <h3>Analysis Results</h3>
+        <div id="outputContent"></div>
+    </div>
+</div>
+
+<script>
+    function solveGauss(matrix, N) {
+        for (let c = 0; c < N; c++) {
+            let maxRow = c;
+            for (let r = c + 1; r < N; r++) {
+                if (Math.abs(matrix[r][c]) > Math.abs(matrix[maxRow][c])) maxRow = r;
+            }
+            if (maxRow !== c) {
+                let temp = matrix[c]; matrix[c] = matrix[maxRow]; matrix[maxRow] = temp;
+            }
+            if (Math.abs(matrix[c][c]) < 1e-9) return null;
+
+            for (let r = c + 1; r < N; r++) {
+                let factor = matrix[r][c] / matrix[c][c];
+                for (let q = c; q <= N; q++) matrix[r][q] -= factor * matrix[c][q];
+            }
+        }
+
+        let I = new Array(N).fill(0);
+        for (let k = N - 1; k >= 0; k--) {
+            let sum = matrix[k][N];
+            for (let m = k + 1; m < N; m++) sum -= matrix[k][m] * I[m];
+            I[k] = sum / matrix[k][k];
+        }
+        return I;
+    }
+
+    function calculateCircuit() {
+        let R1 = parseFloat(document.getElementById('r1').value);
+        let R2 = parseFloat(document.getElementById('r2').value);
+        let R3 = parseFloat(document.getElementById('r3').value);
+        let R4 = parseFloat(document.getElementById('r4').value);
+        let R5 = parseFloat(document.getElementById('r5').value);
+        let Vs = parseFloat(document.getElementById('vs').value);
+
+        if ([R1, R2, R3, R4, R5, Vs].some(v => isNaN(v) || v <= 0)) {
+            alert("Please enter valid positive values for all fields.");
+            return;
+        }
+
+        let matrix = [
+            [ 1.0, 0.0, -1.0,  0.0, -1.0, 0.0 ],
+            [ 0.0, 1.0,  0.0, -1.0,  1.0, 0.0 ],
+            [  R1, -R2,  0.0,  0.0,   R5, 0.0 ],
+            [ 0.0, 0.0,   R3,  -R4,  -R5, 0.0 ],
+            [  R1, 0.0,   R3,  0.0,  0.0,  Vs ]
+        ];
+
+        let I = solveGauss(matrix, 5);
+        if (!I) {
+            alert("System matrix is singular!");
+            return;
+        }
+
+        let I_total = I[0] + I[1];
+        let Req = Vs / I_total;
+        let VB = Vs - (I[0] * R1);
+        let VC = Vs - (I[1] * R2);
+        let V_BC = VB - VC;
+        let P_source = Vs * I_total;
+
+        let isBalanced = Math.abs(I[4]) < 1e-6;
+
+        let html = `
+        <div class="result-item"><b>Branch Currents:</b> I1 = ${I[0].toFixed(4)}A, I2 = ${I[1].toFixed(4)}A, I3 = ${I[2].toFixed(4)}A, I4 = ${I[3].toFixed(4)}A, I5 = ${I[4].toFixed(4)}A</div>
+        <div class="result-item"><b>Node Voltages:</b> V_B = ${VB.toFixed(4)}V, V_C = ${VC.toFixed(4)}V, Differential V_BC = ${V_BC.toFixed(4)}V</div>
+        <div class="result-item"><b>Bridge State:</b> <span style="color: ${isBalanced ? '#a6e3a1' : '#f38ba8'}">${isBalanced ? 'BALANCED (I5 = 0A)' : 'UNBALANCED'}</span></div>
+        <div class="result-item"><b>Equivalent Resistance (Req):</b> ${Req.toFixed(4)} Ohm</div>
+        <div class="result-item"><b>Source Power (P_source):</b> ${P_source.toFixed(4)} Watt</div>
+    `;
+
+        document.getElementById('outputContent').innerHTML = html;
+        document.getElementById('results').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
