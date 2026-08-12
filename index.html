@@ -67,20 +67,29 @@
 <script>
     // Hàm tự động tăng và hiển thị lượt truy cập
     async function updateVisitorCount() {
+        const visitElem = document.getElementById('visitCount');
+
+        // 1. Tự động đếm cục bộ trước (đảm bảo hiển thị ngay lập tức, không bao giờ bị dính Loading...)
+        let localVisits = parseInt(localStorage.getItem('wheatstone_visits') || '0') + 1;
+        localStorage.setItem('wheatstone_visits', localVisits);
+        visitElem.innerText = localVisits;
+
+        // 2. Đồng bộ với API Server online
         try {
             const response = await fetch('https://api.counterapi.dev/v1/nerky-wheatstone-solver/visits/up');
-            const data = await response.json();
-
-            if (data && data.count) {
-                document.getElementById('visitCount').innerText = data.count.toLocaleString();
+            if (response.ok) {
+                const data = await response.json();
+                if (data && (data.count !== undefined || data.value !== undefined)) {
+                    const count = data.count || data.value;
+                    visitElem.innerText = count.toLocaleString();
+                }
             }
         } catch (error) {
-            console.log("Counter API error:", error);
-            document.getElementById('visitCount').innerText = "1+";
+            console.log("Dùng bộ đếm local do server API bận:", error);
         }
     }
 
-    // Chạy hàm đếm ngay khi tải trang
+    // Chạy hàm đếm ngay khi trang tải xong
     updateVisitorCount();
 
     function solveGauss(matrix, N) {
