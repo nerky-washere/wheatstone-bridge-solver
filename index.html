@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Ép trình duyệt luôn lấy dữ liệu mới nhất (Chống cache) -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+
     <title>Wheatstone Bridge Circuit Solver</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #1e1e2e; color: #cdd6f4; padding: 20px; display: flex; justify-content: center; }
@@ -29,10 +32,12 @@
 <div class="card">
     <h2>WHEATSTONE BRIDGE SOLVER</h2>
 
+    <!-- BỘ ĐẾM LƯỢT TRUY CẬP (JS COUNTER) -->
     <div style="text-align: center; margin-bottom: 15px; font-weight: 600; font-size: 14px; color: #89b4fa;">
         👀 TOTAL VISITS: <span id="visitCount" style="background-color: #181825; padding: 4px 10px; border-radius: 6px; border: 1px solid #45475a;">Loading...</span>
     </div>
 
+    <!-- Sơ đồ ASCII -->
     <div class="diagram">
         +----------[ R1 ]----------+----------[ R2 ]----------+
         |                          |                          |
@@ -60,6 +65,24 @@
 </div>
 
 <script>
+    // Hàm tự động tăng và hiển thị lượt truy cập
+    async function updateVisitorCount() {
+        try {
+            const response = await fetch('https://api.counterapi.dev/v1/nerky-wheatstone-solver/visits/up');
+            const data = await response.json();
+
+            if (data && data.count) {
+                document.getElementById('visitCount').innerText = data.count.toLocaleString();
+            }
+        } catch (error) {
+            console.log("Counter API error:", error);
+            document.getElementById('visitCount').innerText = "1+";
+        }
+    }
+
+    // Chạy hàm đếm ngay khi tải trang
+    updateVisitorCount();
+
     function solveGauss(matrix, N) {
         for (let c = 0; c < N; c++) {
             let maxRow = c;
@@ -135,20 +158,5 @@
     }
 </script>
 
-    async function updateVisitorCount() {
-        try {
-            const response = await fetch('https://api.counterapi.dev/v1/nerky-wheatstone-solver/visits/up');
-            const data = await response.json();
-
-            if (data && data.count) {
-                document.getElementById('visitCount').innerText = data.count.toLocaleString();
-            }
-        } catch (error) {
-            console.log("Counter API error:", error);
-            document.getElementById('visitCount').innerText = "1+";
-        }
-    }
-
-    updateVisitorCount();
 </body>
 </html>
