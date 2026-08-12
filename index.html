@@ -32,9 +32,9 @@
 <div class="card">
     <h2>WHEATSTONE BRIDGE SOLVER</h2>
 
-    <!-- BỘ ĐẾM LƯỢT TRUY CẬP (JS COUNTER) -->
+    <!-- BỘ ĐẾM LƯỢT TRUY CẬP GLOBAL UNIQUE COUNTER -->
     <div style="text-align: center; margin-bottom: 15px; font-weight: 600; font-size: 14px; color: #89b4fa;">
-        👀 TOTAL VISITS: <span id="visitCount" style="background-color: #181825; padding: 4px 10px; border-radius: 6px; border: 1px solid #45475a;">Loading...</span>
+        👥 UNIQUE VISITORS: <span id="visitCount" style="background-color: #181825; padding: 4px 10px; border-radius: 6px; border: 1px solid #45475a;">Loading...</span>
     </div>
 
     <!-- Sơ đồ ASCII -->
@@ -65,33 +65,52 @@
 </div>
 
 <script>
-    // Hàm tự động tăng và hiển thị lượt truy cập
-    async function updateVisitorCount() {
+    // =========================================================
+    // HỆ THỐNG GLOBAL UNIQUE VISITOR COUNTER (DATABASE SERVER)
+    // =========================================================
+    const BACKEND_URL = 'https://wheatstone-counter-backend.onrender.com';
+
+    async function updateGlobalVisitorCount() {
         const visitElem = document.getElementById('visitCount');
+        if (!visitElem) return;
 
-        // 1. Tự động đếm cục bộ trước (đảm bảo hiển thị ngay lập tức, không bao giờ bị dính Loading...)
-        let localVisits = parseInt(localStorage.getItem('wheatstone_visits') || '0') + 1;
-        localStorage.setItem('wheatstone_visits', localVisits);
-        visitElem.innerText = localVisits;
+        let localVid = localStorage.getItem('__global_vid');
 
-        // 2. Đồng bộ với API Server online
         try {
-            const response = await fetch('https://api.counterapi.dev/v1/nerky-wheatstone-solver/visits/up');
+            const response = await fetch(`${BACKEND_URL}/api/visitor-count`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Visitor-ID': localVid || ''
+                },
+                credentials: 'include' // Gửi/nhận Secure Cookie HTTP-Only
+            });
+
             if (response.ok) {
                 const data = await response.json();
-                if (data && (data.count !== undefined || data.value !== undefined)) {
-                    const count = data.count || data.value;
-                    visitElem.innerText = count.toLocaleString();
+                if (data.success && data.count !== undefined) {
+                    // Lấy con số thực tế duy nhất từ Supabase
+                    visitElem.innerText = data.count.toLocaleString();
+
+                    if (data.visitor_id) {
+                        localStorage.setItem('__global_vid', data.visitor_id);
+                    }
                 }
+            } else {
+                visitElem.innerText = "Offline";
             }
         } catch (error) {
-            console.log("Dùng bộ đếm local do server API bận:", error);
+            console.error("Lỗi đếm lượt truy cập Server:", error);
+            visitElem.innerText = "Offline";
         }
     }
 
-    // Chạy hàm đếm ngay khi trang tải xong
-    updateVisitorCount();
+    // Chạy hàm đếm ngay khi DOM sẵn sàng
+    document.addEventListener('DOMContentLoaded', updateGlobalVisitorCount);
 
+    // =========================================================
+    // THUẬT TOÁN GIẢI MẠCH ĐIỆN WHEATSTONE
+    // =========================================================
     function solveGauss(matrix, N) {
         for (let c = 0; c < N; c++) {
             let maxRow = c;
