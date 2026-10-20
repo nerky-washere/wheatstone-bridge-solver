@@ -1,4 +1,3 @@
-/* --- CSS VARIABLES & THEME ENGINE --- */
 :root {
     --bg-primary: #090A0F;
     --bg-secondary: #13161F;
@@ -175,7 +174,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
 }
 
 .panel h2 {
@@ -199,44 +198,81 @@ body {
     border-color: var(--accent);
 }
 
-.resistors-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-bottom: 20px;
+.main-voltage {
+    margin-bottom: 14px;
 }
 
-.input-group {
+/* Interactive Sliders Grid Styling */
+.resistors-interactive-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.interactive-input-group {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     gap: 6px;
 }
 
-.input-group.full-width {
+.interactive-input-group.full-width {
     grid-column: span 2;
 }
 
-.input-group label {
-    font-size: 0.8rem;
+.label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.label-row label {
+    font-size: 0.75rem;
     color: var(--text-muted);
     font-family: var(--font-mono);
 }
 
-.input-group input {
-    background: var(--surface);
+.label-row input[type="number"] {
+    background: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 10px 14px;
+    border-radius: 6px;
+    padding: 4px 8px;
     color: var(--text-main);
     font-family: var(--font-mono);
-    font-size: 1rem;
+    font-size: 0.9rem;
+    width: 80px;
+    text-align: right;
     outline: none;
-    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.input-group input:focus {
+.label-row input[type="number"]:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Range Slider Styling */
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border-color);
+    outline: none;
+    transition: opacity 0.2s;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    box-shadow: 0 0 6px var(--accent-glow);
 }
 
 .primary-btn {
@@ -251,11 +287,43 @@ body {
     cursor: pointer;
     transition: opacity 0.2s, box-shadow 0.2s;
     box-shadow: 0 4px 15px var(--accent-glow);
+    margin-bottom: 16px;
 }
 
 .primary-btn:hover { opacity: 0.9; }
 
-/* --- VISUAL PANEL & SVG CIRCUIT --- */
+/* Notes Section */
+.notes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.notes-container label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+.notes-container textarea {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    color: var(--text-main);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    resize: vertical;
+    min-height: 70px;
+    outline: none;
+}
+
+.notes-container textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* --- VISUAL PANEL & SVG --- */
 .visual-panel {
     display: flex;
     flex-direction: column;
@@ -288,14 +356,16 @@ body {
     opacity: 0;
 }
 
+/* Hiệu ứng dòng điện chạy 1 lần rồi dừng hẳn */
 .current-flow.active {
     opacity: 1;
-    animation: dashFlow 1.2s linear infinite;
+    animation: dashFlow 1.0s linear 1 forwards;
 }
 
 @keyframes dashFlow {
-    from { stroke-dashoffset: 24; }
-    to { stroke-dashoffset: 0; }
+    0% { stroke-dashoffset: 24; opacity: 1; }
+    90% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
 }
 
 .resistor-box {
@@ -322,7 +392,7 @@ body {
     font-weight: 700;
 }
 
-/* --- RESULTS CARD & TABLE --- */
+/* --- RESULTS CARD --- */
 .results-card {
     background: var(--surface);
     border-radius: 12px;
@@ -393,9 +463,8 @@ body {
     background: var(--accent-glow);
 }
 
-/* Bảng chi tiết I và U */
 .detailed-table-container {
-    max-height: 150px;
+    max-height: 140px;
     overflow-y: auto;
     border: 1px solid var(--border-color);
     border-radius: 8px;
