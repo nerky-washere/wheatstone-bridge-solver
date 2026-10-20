@@ -15,7 +15,6 @@
     --font-mono: 'JetBrains Mono', monospace;
 }
 
-/* Light Mode Overrides */
 [data-theme="light"] {
     --bg-primary: #F1F5F9;
     --bg-secondary: #FFFFFF;
@@ -28,7 +27,6 @@
     --accent-glow: rgba(2, 132, 199, 0.2);
 }
 
-/* Accent Color Variations */
 [data-accent="emerald"] { --accent: #10B981; --accent-glow: rgba(16, 185, 129, 0.25); }
 [data-accent="purple"]  { --accent: #8B5CF6; --accent-glow: rgba(139, 92, 246, 0.25); }
 [data-accent="amber"]   { --accent: #F59E0B; --accent-glow: rgba(245, 158, 11, 0.25); }
@@ -53,13 +51,12 @@ body {
 
 .app-container {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1250px;
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
-/* --- HEADER --- */
 .app-header {
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
@@ -156,14 +153,13 @@ body {
     font-weight: 600;
 }
 
-/* --- DASHBOARD GRID --- */
 .dashboard-grid {
     display: grid;
-    grid-template-columns: 1fr 1.2fr;
+    grid-template-columns: 1fr 1.3fr;
     gap: 20px;
 }
 
-@media(max-width: 900px) {
+@media(max-width: 950px) {
     .dashboard-grid { grid-template-columns: 1fr; }
 }
 
@@ -175,7 +171,6 @@ body {
     box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
-/* --- CONTROL PANEL --- */
 .panel-header {
     display: flex;
     justify-content: space-between;
@@ -258,11 +253,9 @@ body {
     box-shadow: 0 4px 15px var(--accent-glow);
 }
 
-.primary-btn:hover {
-    opacity: 0.9;
-}
+.primary-btn:hover { opacity: 0.9; }
 
-/* --- VISUAL PANEL & SVG --- */
+/* --- VISUAL PANEL & SVG CIRCUIT --- */
 .visual-panel {
     display: flex;
     flex-direction: column;
@@ -273,17 +266,42 @@ body {
     background: var(--surface);
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    height: 220px;
+    height: 250px;
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 10px;
+    position: relative;
 }
 
 .circuit-line {
     stroke: var(--text-muted);
     stroke-width: 2.5;
     fill: none;
+}
+
+.current-flow {
+    stroke: var(--accent);
+    stroke-width: 3.5;
+    fill: none;
+    stroke-dasharray: 8 8;
+    opacity: 0;
+}
+
+.current-flow.active {
+    opacity: 1;
+    animation: dashFlow 1.2s linear infinite;
+}
+
+@keyframes dashFlow {
+    from { stroke-dashoffset: 24; }
+    to { stroke-dashoffset: 0; }
+}
+
+.resistor-box {
+    fill: var(--bg-secondary);
+    stroke: var(--border-color);
+    stroke-width: 2;
 }
 
 .circuit-node {
@@ -293,11 +311,18 @@ body {
 .svg-label {
     fill: var(--text-main);
     font-family: var(--font-mono);
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
 }
 
-/* --- RESULTS CARD --- */
+.node-label {
+    fill: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* --- RESULTS CARD & TABLE --- */
 .results-card {
     background: var(--surface);
     border-radius: 12px;
@@ -314,9 +339,7 @@ body {
     align-items: center;
 }
 
-.results-header h3 {
-    font-size: 0.95rem;
-}
+.results-header h3 { font-size: 0.95rem; }
 
 .status-badge {
     font-size: 0.75rem;
@@ -363,4 +386,42 @@ body {
     font-size: 1.05rem;
     font-family: var(--font-mono);
     color: var(--accent);
+}
+
+.highlight-box {
+    border-color: var(--accent);
+    background: var(--accent-glow);
+}
+
+/* Bảng chi tiết I và U */
+.detailed-table-container {
+    max-height: 150px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-secondary);
+}
+
+.detailed-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-align: left;
+}
+
+.detailed-table th, .detailed-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.detailed-table th {
+    background: var(--surface);
+    color: var(--text-muted);
+    position: sticky;
+    top: 0;
+}
+
+.detailed-table td {
+    color: var(--text-main);
 }
