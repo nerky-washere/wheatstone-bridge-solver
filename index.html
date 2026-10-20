@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi" data-theme="dark" data-accent="cyan">
+<html lang="en" data-theme="dark" data-accent="cyan">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,7 +18,7 @@
             
             <div class="header-controls">
                 <div class="theme-switcher">
-                    <button class="theme-btn" id="theme-toggle" title="Chuyển đổi Dark/Light Mode">🌙</button>
+                    <button class="theme-btn" id="theme-toggle" title="Toggle Dark/Light Mode">🌙</button>
                     <div class="accent-pickers">
                         <span class="dot cyan" data-color="cyan" title="Electric Cyan"></span>
                         <span class="dot emerald" data-color="emerald" title="Emerald Green"></span>
@@ -43,54 +43,80 @@
                 </div>
 
                 <div class="input-group main-voltage">
-                    <label for="vs">Nguồn điện (Vs) [V]</label>
+                    <label for="vs">Source Voltage (V<sub>s</sub>) [V]</label>
                     <input type="number" id="vs" value="12" step="0.1">
                 </div>
 
-                <div class="resistors-grid">
-                    <div class="input-group">
-                        <label for="r1">R1 [Ω]</label>
-                        <input type="number" id="r1" value="100" step="1">
+                <div class="resistors-interactive-grid">
+                    <!-- R1 -->
+                    <div class="interactive-input-group">
+                        <div class="label-row">
+                            <label for="r1">R1 [Ω]</label>
+                            <input type="number" id="r1" value="100" step="1">
+                        </div>
+                        <input type="range" id="r1-slider" min="1" max="1000" value="100" class="slider">
                     </div>
-                    <div class="input-group">
-                        <label for="r2">R2 [Ω]</label>
-                        <input type="number" id="r2" value="100" step="1">
+                    <!-- R2 -->
+                    <div class="interactive-input-group">
+                        <div class="label-row">
+                            <label for="r2">R2 [Ω]</label>
+                            <input type="number" id="r2" value="100" step="1">
+                        </div>
+                        <input type="range" id="r2-slider" min="1" max="1000" value="100" class="slider">
                     </div>
-                    <div class="input-group">
-                        <label for="r3">R3 [Ω]</label>
-                        <input type="number" id="r3" value="150" step="1">
+                    <!-- R3 -->
+                    <div class="interactive-input-group">
+                        <div class="label-row">
+                            <label for="r3">R3 [Ω]</label>
+                            <input type="number" id="r3" value="150" step="1">
+                        </div>
+                        <input type="range" id="r3-slider" min="1" max="1000" value="150" class="slider">
                     </div>
-                    <div class="input-group">
-                        <label for="r4">R4 [Ω]</label>
-                        <input type="number" id="r4" value="150" step="1">
+                    <!-- R4 -->
+                    <div class="interactive-input-group">
+                        <div class="label-row">
+                            <label for="r4">R4 [Ω]</label>
+                            <input type="number" id="r4" value="150" step="1">
+                        </div>
+                        <input type="range" id="r4-slider" min="1" max="1000" value="150" class="slider">
                     </div>
-                    <div class="input-group full-width">
-                        <label for="r5">R5 (Điện kế / Ngánh giữa M-N) [Ω]</label>
-                        <input type="number" id="r5" value="220" step="1">
+                    <!-- R5 -->
+                    <div class="interactive-input-group full-width">
+                        <div class="label-row">
+                            <label for="r5">R5 (Galvanometer / Bridge Arm M-N) [Ω]</label>
+                            <input type="number" id="r5" value="220" step="1">
+                        </div>
+                        <input type="range" id="r5-slider" min="1" max="1000" value="220" class="slider">
                     </div>
                 </div>
 
                 <button id="calculate-btn" class="primary-btn">Compute Circuit Matrix</button>
+
+                <!-- Thêm phần Notes theo yêu cầu -->
+                <div class="notes-container">
+                    <label for="lab-notes">📝 Lab Notes & Observations</label>
+                    <textarea id="lab-notes" placeholder="Type your experimental notes or formulas here..."></textarea>
+                </div>
             </section>
 
             <!-- Visualizer & Results (Right) -->
             <section class="panel visual-panel">
                 <div class="circuit-viewport">
-                    <!-- Sơ đồ mạch SVG chuẩn mô hình dạng hình chữ nhật (Giống Hình 2) kèm hiệu ứng dòng điện -->
+                    <!-- Sơ đồ mạch SVG đã được nối liền mạch hoàn chỉnh -->
                     <svg id="bridge-svg" viewBox="0 0 520 280" width="100%" height="100%">
-                        <!-- Dây dẫn nền -->
-                        <path class="circuit-line" d="M 40 140 H 100 M 100 70 H 220 M 270 70 H 390 M 100 210 H 220 M 270 210 H 390 M 390 140 H 460 M 245 70 V 100 M 245 180 V 210" />
+                        <!-- Dây dẫn mạch cầu liền mạch -->
+                        <path class="circuit-line" d="M 40 140 H 135 M 205 70 H 230 M 260 70 H 305 M 205 210 H 230 M 260 210 H 305 M 375 140 H 460 M 245 70 V 100 M 245 180 V 210 M 135 70 H 205 M 135 210 H 205 M 305 70 H 375 M 305 210 H 375 M 135 70 V 140 M 135 140 V 210 M 375 70 V 140 M 375 140 V 210" />
                         
-                        <!-- Hiệu ứng dòng điện chạy qua (Animation Dash) -->
-                        <path id="flow-input" class="current-flow" d="M 40 140 H 100" />
-                        <path id="flow-r1" class="current-flow" d="M 100 70 H 220" />
-                        <path id="flow-r3" class="current-flow" d="M 100 210 H 220" />
+                        <!-- Hiệu ứng dòng điện chạy một lần rồi dừng -->
+                        <path id="flow-input" class="current-flow" d="M 40 140 H 135" />
+                        <path id="flow-r1" class="current-flow" d="M 135 70 H 205" />
+                        <path id="flow-r3" class="current-flow" d="M 135 210 H 205" />
                         <path id="flow-r5" class="current-flow" d="M 245 100 V 180" />
-                        <path id="flow-r2" class="current-flow" d="M 270 70 H 390" />
-                        <path id="flow-r4" class="current-flow" d="M 270 210 H 390" />
-                        <path id="flow-output" class="current-flow" d="M 390 140 H 460" />
+                        <path id="flow-r2" class="current-flow" d="M 305 70 H 375" />
+                        <path id="flow-r4" class="current-flow" d="M 305 210 H 375" />
+                        <path id="flow-output" class="current-flow" d="M 375 140 H 460" />
 
-                        <!-- Các khối điện trở (Rectangle symbols) -->
+                        <!-- Khối điện trở -->
                         <rect x="135" y="55" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="135" y="195" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="230" y="100" width="30" height="80" rx="4" class="resistor-box" />
@@ -105,11 +131,11 @@
                         <text x="340" y="215" text-anchor="middle" class="svg-label">R4</text>
 
                         <!-- Các nút mạch A, B, M, N -->
-                        <circle cx="100" cy="140" r="5" class="circuit-node" />
-                        <text x="90" y="130" class="node-label">A</text>
+                        <circle cx="135" cy="140" r="5" class="circuit-node" />
+                        <text x="120" y="130" class="node-label">A</text>
 
-                        <circle cx="390" cy="140" r="5" class="circuit-node" />
-                        <text x="400" y="130" class="node-label">B</text>
+                        <circle cx="375" cy="140" r="5" class="circuit-node" />
+                        <text x="385" y="130" class="node-label">B</text>
 
                         <circle cx="245" cy="70" r="5" class="circuit-node" />
                         <text x="245" y="55" text-anchor="middle" class="node-label">M</text>
@@ -117,9 +143,9 @@
                         <circle cx="245" cy="210" r="5" class="circuit-node" />
                         <text x="245" y="230" text-anchor="middle" class="node-label">N</text>
 
-                        <!-- Mũi tên nguồn vào / ra -->
-                        <polygon points="65,135 75,140 65,145" fill="var(--accent)" />
-                        <polygon points="435,135 445,140 435,145" fill="var(--accent)" />
+                        <!-- Mũi tên nguồn -->
+                        <polygon points="85,135 95,140 85,145" fill="var(--accent)" />
+                        <polygon points="415,135 425,140 415,145" fill="var(--accent)" />
                     </svg>
                 </div>
 
@@ -131,43 +157,43 @@
                     
                     <div class="metrics-grid">
                         <div class="metric-item">
-                            <span>Điện trở tương đương (Req)</span>
+                            <span>Equivalent Resistance (R<sub>eq</sub>)</span>
                             <strong id="req-result">0.00 Ω</strong>
                         </div>
                         <div class="metric-item">
-                            <span>Dòng tổng (I_total)</span>
+                            <span>Total Current (I<sub>in</sub>)</span>
                             <strong id="itotal-result">0.00 A</strong>
                         </div>
                         <div class="metric-item">
-                            <span>Điện thế nút M (Vm)</span>
+                            <span>Node M Voltage (V<sub>m</sub>)</span>
                             <strong id="vc-result">0.00 V</strong>
                         </div>
                         <div class="metric-item">
-                            <span>Điện thế nút N (Vn)</span>
+                            <span>Node N Voltage (V<sub>n</sub>)</span>
                             <strong id="vd-result">0.00 V</strong>
                         </div>
                         <div class="metric-item highlight-box">
-                            <span>Dòng qua nhánh giữa (Ig / I5)</span>
+                            <span>Galvanometer Current (I<sub>g</sub> / I<sub>5</sub>)</span>
                             <strong id="ig-result">0.00 mA</strong>
                         </div>
                         <div class="metric-item">
-                            <span>Hiệu điện thế U5</span>
+                            <span>Voltage Drop (U<sub>5</sub>)</span>
                             <strong id="u5-result">0.00 V</strong>
                         </div>
                     </div>
 
-                    <!-- Bảng chi tiết I và U cho từng điện trở -->
+                    <!-- Bảng chi tiết (Đã xoá bỏ dấu < thừa) -->
                     <div class="detailed-table-container">
                         <table class="detailed-table">
                             <thead>
-                                <<tr>
-                                    <th>Nhánh</th>
-                                    <th>Cường độ (I)</th>
-                                    <th>Hiệu điện thế (U)</th>
+                                <tr>
+                                    <th>Branch</th>
+                                    <th>Current (I)</th>
+                                    <th>Voltage (U)</th>
                                 </tr>
                             </thead>
                             <tbody id="detailed-tbody">
-                                <!-- Render bằng JS -->
+                                <!-- Render by JS -->
                             </tbody>
                         </table>
                     </div>
