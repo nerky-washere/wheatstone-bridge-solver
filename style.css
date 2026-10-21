@@ -10,8 +10,7 @@
     --accent-glow: rgba(0, 242, 254, 0.25);
     --danger: #EF4444;
     --success: #10B981;
-    --font-sans: 'Inter', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
 [data-theme="light"] {
@@ -36,8 +35,12 @@
     padding: 0;
 }
 
+/* Global Monospace Typography Requirement */
+body, input, button, textarea, select, table, th, td {
+    font-family: var(--font-mono);
+}
+
 body {
-    font-family: var(--font-sans);
     background-color: var(--bg-primary);
     color: var(--text-main);
     min-height: 100vh;
@@ -92,7 +95,6 @@ body {
     font-size: 1.15rem;
     font-weight: 600;
     letter-spacing: 0.5px;
-    font-family: var(--font-mono);
 }
 
 .header-controls {
@@ -143,7 +145,6 @@ body {
     padding: 8px 16px;
     border-radius: 30px;
     font-size: 0.85rem;
-    font-family: var(--font-mono);
     color: var(--text-muted);
 }
 
@@ -198,11 +199,46 @@ body {
     border-color: var(--accent);
 }
 
+/* Requirement 1: Redesigned Source Voltage Input */
 .main-voltage {
-    margin-bottom: 14px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
-/* Interactive Sliders Grid Styling */
+.main-voltage label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.main-voltage input {
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text-main);
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.main-voltage input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Requirement 2: Remove Native Number Spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* Interactive Sliders Grid */
 .resistors-interactive-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -233,7 +269,6 @@ body {
 .label-row label {
     font-size: 0.75rem;
     color: var(--text-muted);
-    font-family: var(--font-mono);
 }
 
 .label-row input[type="number"] {
@@ -242,7 +277,6 @@ body {
     border-radius: 6px;
     padding: 4px 8px;
     color: var(--text-main);
-    font-family: var(--font-mono);
     font-size: 0.9rem;
     width: 80px;
     text-align: right;
@@ -253,7 +287,7 @@ body {
     border-color: var(--accent);
 }
 
-/* Range Slider Styling */
+/* Requirement 5: Theme-Aware Sliders */
 .slider {
     -webkit-appearance: none;
     width: 100%;
@@ -275,22 +309,15 @@ body {
     box-shadow: 0 0 6px var(--accent-glow);
 }
 
-.primary-btn {
-    width: 100%;
+.slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
     background: var(--accent);
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    padding: 12px;
-    font-weight: 600;
-    font-size: 0.95rem;
     cursor: pointer;
-    transition: opacity 0.2s, box-shadow 0.2s;
-    box-shadow: 0 4px 15px var(--accent-glow);
-    margin-bottom: 16px;
+    border: none;
+    box-shadow: 0 0 6px var(--accent-glow);
 }
-
-.primary-btn:hover { opacity: 0.9; }
 
 /* Notes Section */
 .notes-container {
@@ -302,7 +329,6 @@ body {
 .notes-container label {
     font-size: 0.75rem;
     color: var(--text-muted);
-    font-family: var(--font-mono);
 }
 
 .notes-container textarea {
@@ -311,7 +337,6 @@ body {
     border-radius: 8px;
     padding: 10px;
     color: var(--text-main);
-    font-family: var(--font-sans);
     font-size: 0.85rem;
     resize: vertical;
     min-height: 70px;
@@ -356,14 +381,25 @@ body {
     opacity: 0;
 }
 
-/* Hiệu ứng dòng điện chạy 1 lần rồi dừng hẳn */
-.current-flow.active {
+/* Pulsed Current Flow Animation (Requirement 7) */
+.current-flow.active-forward {
     opacity: 1;
-    animation: dashFlow 1.0s linear 1 forwards;
+    animation: dashFlowForward 1.2s linear 1 forwards;
 }
 
-@keyframes dashFlow {
+.current-flow.active-reverse {
+    opacity: 1;
+    animation: dashFlowReverse 1.2s linear 1 forwards;
+}
+
+@keyframes dashFlowForward {
     0% { stroke-dashoffset: 24; opacity: 1; }
+    90% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes dashFlowReverse {
+    0% { stroke-dashoffset: -24; opacity: 1; }
     90% { opacity: 1; }
     100% { stroke-dashoffset: 0; opacity: 0; }
 }
@@ -380,19 +416,17 @@ body {
 
 .svg-label {
     fill: var(--text-main);
-    font-family: var(--font-mono);
     font-size: 11px;
     font-weight: 600;
 }
 
 .node-label {
     fill: var(--accent);
-    font-family: var(--font-mono);
     font-size: 12px;
     font-weight: 700;
 }
 
-/* --- RESULTS CARD --- */
+/* --- REQUIREMENT 4: GLOWING RESULT CARDS --- */
 .results-card {
     background: var(--surface);
     border-radius: 12px;
@@ -413,7 +447,6 @@ body {
 
 .status-badge {
     font-size: 0.75rem;
-    font-family: var(--font-mono);
     padding: 4px 10px;
     border-radius: 20px;
     font-weight: 600;
@@ -445,6 +478,13 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    box-shadow: 0 0 10px var(--accent-glow);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.metric-item:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
 }
 
 .metric-item span {
@@ -454,13 +494,13 @@ body {
 
 .metric-item strong {
     font-size: 1.05rem;
-    font-family: var(--font-mono);
     color: var(--accent);
 }
 
 .highlight-box {
     border-color: var(--accent);
     background: var(--accent-glow);
+    box-shadow: 0 0 15px var(--accent-glow);
 }
 
 .detailed-table-container {
@@ -474,7 +514,6 @@ body {
 .detailed-table {
     width: 100%;
     border-collapse: collapse;
-    font-family: var(--font-mono);
     font-size: 0.8rem;
     text-align: left;
 }
