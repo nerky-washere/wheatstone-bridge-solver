@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wheatstone Bridge Engine | Advanced Solver</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -43,7 +42,7 @@
                 </div>
 
                 <div class="input-group main-voltage">
-                    <label for="vs">Source Voltage (V<sub>s</sub>) [V]</label>
+                    <label for="vs">Source Voltage (Vs) [V]</label>
                     <input type="number" id="vs" value="12" step="0.1">
                 </div>
 
@@ -83,16 +82,14 @@
                     <!-- R5 -->
                     <div class="interactive-input-group full-width">
                         <div class="label-row">
-                            <label for="r5">R5 (Galvanometer / Bridge Arm M-N) [Ω]</label>
+                            <label for="r5">R5 (Galvanometer / Arm M-N) [Ω]</label>
                             <input type="number" id="r5" value="220" step="1">
                         </div>
                         <input type="range" id="r5-slider" min="1" max="1000" value="220" class="slider">
                     </div>
                 </div>
 
-                <button id="calculate-btn" class="primary-btn">Compute Circuit Matrix</button>
-
-                <!-- Thêm phần Notes theo yêu cầu -->
+                <!-- Notes Section -->
                 <div class="notes-container">
                     <label for="lab-notes">📝 Lab Notes & Observations</label>
                     <textarea id="lab-notes" placeholder="Type your experimental notes or formulas here..."></textarea>
@@ -102,12 +99,11 @@
             <!-- Visualizer & Results (Right) -->
             <section class="panel visual-panel">
                 <div class="circuit-viewport">
-                    <!-- Sơ đồ mạch SVG đã được nối liền mạch hoàn chỉnh -->
                     <svg id="bridge-svg" viewBox="0 0 520 280" width="100%" height="100%">
-                        <!-- Dây dẫn mạch cầu liền mạch -->
+                        <!-- Connected Circuit Wires -->
                         <path class="circuit-line" d="M 40 140 H 135 M 205 70 H 230 M 260 70 H 305 M 205 210 H 230 M 260 210 H 305 M 375 140 H 460 M 245 70 V 100 M 245 180 V 210 M 135 70 H 205 M 135 210 H 205 M 305 70 H 375 M 305 210 H 375 M 135 70 V 140 M 135 140 V 210 M 375 70 V 140 M 375 140 V 210" />
                         
-                        <!-- Hiệu ứng dòng điện chạy một lần rồi dừng -->
+                        <!-- Pulsed Current Flow Overlays -->
                         <path id="flow-input" class="current-flow" d="M 40 140 H 135" />
                         <path id="flow-r1" class="current-flow" d="M 135 70 H 205" />
                         <path id="flow-r3" class="current-flow" d="M 135 210 H 205" />
@@ -116,21 +112,21 @@
                         <path id="flow-r4" class="current-flow" d="M 305 210 H 375" />
                         <path id="flow-output" class="current-flow" d="M 375 140 H 460" />
 
-                        <!-- Khối điện trở -->
+                        <!-- Resistor Rectangles -->
                         <rect x="135" y="55" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="135" y="195" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="230" y="100" width="30" height="80" rx="4" class="resistor-box" />
                         <rect x="305" y="55" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="305" y="195" width="70" height="30" rx="4" class="resistor-box" />
 
-                        <!-- Nhãn linh kiện -->
+                        <!-- Labels -->
                         <text x="170" y="75" text-anchor="middle" class="svg-label">R1</text>
                         <text x="170" y="215" text-anchor="middle" class="svg-label">R3</text>
                         <text x="245" y="144" text-anchor="middle" class="svg-label">R5</text>
                         <text x="340" y="75" text-anchor="middle" class="svg-label">R2</text>
                         <text x="340" y="215" text-anchor="middle" class="svg-label">R4</text>
 
-                        <!-- Các nút mạch A, B, M, N -->
+                        <!-- Nodes -->
                         <circle cx="135" cy="140" r="5" class="circuit-node" />
                         <text x="120" y="130" class="node-label">A</text>
 
@@ -143,7 +139,7 @@
                         <circle cx="245" cy="210" r="5" class="circuit-node" />
                         <text x="245" y="230" text-anchor="middle" class="node-label">N</text>
 
-                        <!-- Mũi tên nguồn -->
+                        <!-- Source Direction Arrows -->
                         <polygon points="85,135 95,140 85,145" fill="var(--accent)" />
                         <polygon points="415,135 425,140 415,145" fill="var(--accent)" />
                     </svg>
@@ -182,7 +178,7 @@
                         </div>
                     </div>
 
-                    <!-- Bảng chi tiết (Đã xoá bỏ dấu < thừa) -->
+                    <!-- Detailed Results Table -->
                     <div class="detailed-table-container">
                         <table class="detailed-table">
                             <thead>
@@ -193,7 +189,7 @@
                                 </tr>
                             </thead>
                             <tbody id="detailed-tbody">
-                                <!-- Render by JS -->
+                                <!-- Populated dynamically -->
                             </tbody>
                         </table>
                     </div>
