@@ -75,12 +75,13 @@ int main() {
     }
 
     // Kirchhoff System Matrix Formulation (5x6)
+    // Cập nhật theo đúng Topology chuẩn: M giữa R1-R2, N giữa R3-R4, R5 nối M-N
     double matrix[5][6] = {
-        { 1.0, 0.0, -1.0,  0.0, -1.0, 0.0 }, // KCL Node B: I1 - I3 - I5 = 0
-        { 0.0, 1.0,  0.0, -1.0,  1.0, 0.0 }, // KCL Node C: I2 - I4 + I5 = 0
-        {  R1, -R2,  0.0,  0.0,   R5, 0.0 }, // KVL Loop 1: R1*I1 - R2*I2 + R5*I5 = 0
-        { 0.0, 0.0,   R3,  -R4,  -R5, 0.0 }, // KVL Loop 2: R3*I3 - R4*I4 - R5*I5 = 0
-        {  R1, 0.0,   R3,  0.0,  0.0,  Vs }  // KVL Loop 3: R1*I1 + R3*I3 = Vs
+        { 1.0, -1.0,  0.0,  0.0, -1.0, 0.0 }, // KCL Node M: I1 - I2 - I5 = 0
+        { 0.0,  0.0,  1.0, -1.0,  1.0, 0.0 }, // KCL Node N: I3 - I4 + I5 = 0
+        {  R1,  0.0,  -R3,  0.0,   R5, 0.0 }, // KVL Vòng trái (A-M-N-A): R1*I1 - R3*I3 + R5*I5 = 0
+        { 0.0,  -R2,  0.0,   R4,   R5, 0.0 }, // KVL Vòng phải (M-B-N-M): -R2*I2 + R4*I4 + R5*I5 = 0
+        {  R1,   R2,  0.0,  0.0,  0.0,  Vs }  // KVL Nhánh trên (A-M-B): R1*I1 + R2*I2 = Vs
     };
 
     double I[5];
@@ -93,14 +94,13 @@ int main() {
     }
 
     // Derived Parameters Calculation
-    double I_total = I[0] + I[1];
+    double I_total = I[0] + I[2]; // Dòng điện nguồn: I_total = I1 + I3
     double Req = Vs / I_total;
 
-    // Node voltages
-    double V_A = Vs;
-    double V_B = V_A - (I[0] * R1);
-    double V_C = V_A - (I[1] * R2);
-    double V_BC = V_B - V_C;
+    // Node voltages (Khớp biến M, N với frontend)
+    double V_M = Vs - (I[0] * R1);
+    double V_N = Vs - (I[2] * R3);
+    double V_MN = V_M - V_N;
 
     // Power consumption calculations
     double P[5];
@@ -123,13 +123,13 @@ int main() {
     }
 
     cout << "\nNODE VOLTAGES & BRIDGE DIFFERENTIAL:" << endl;
-    cout << " - Node B Potential (V_B) = " << V_B << " V" << endl;
-    cout << " - Node C Potential (V_C) = " << V_C << " V" << endl;
-    cout << " - Voltage Difference V_BC = " << V_BC << " V" << endl;
+    cout << " - Node M Potential (V_M) = " << V_M << " V" << endl;
+    cout << " - Node N Potential (V_N) = " << V_N << " V" << endl;
+    cout << " - Voltage Difference V_MN = " << V_MN << " V" << endl;
 
     cout << "\nBRIDGE STATE:" << endl;
     if (abs(I[4]) < 1e-6) {
-        cout << " -> BALANCED WHEATSTONE BRIDGE (I5 = 0 A, V_BC = 0 V)" << endl;
+        cout << " -> BALANCED WHEATSTONE BRIDGE (I5 = 0 A, V_MN = 0 V)" << endl;
     } else {
         cout << " -> UNBALANCED WHEATSTONE BRIDGE" << endl;
     }
