@@ -16,7 +16,6 @@
             </div>
             
             <div class="header-controls">
-                <!-- Nút chuyển đổi ngôn ngữ mới -->
                 <button class="theme-btn" id="lang-toggle" title="Switch Language" style="font-weight: 700; background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 4px 10px; font-size: 0.9rem;">EN</button>
                 
                 <div class="theme-switcher">
@@ -35,9 +34,7 @@
             </div>
         </header>
 
-        <!-- Main Dashboard Grid -->
         <main class="dashboard-grid">
-            <!-- Control Panel (Left) -->
             <section class="panel control-panel">
                 <div class="panel-header">
                     <h2 data-i18n="circuit_params">Circuit Parameters</h2>
@@ -50,7 +47,6 @@
                 </div>
 
                 <div class="resistors-interactive-grid">
-                    <!-- R1 -->
                     <div class="interactive-input-group">
                         <div class="label-row">
                             <label for="r1" data-i18n="r1_label">R1 [Ω]</label>
@@ -58,7 +54,6 @@
                         </div>
                         <input type="range" id="r1-slider" min="1" max="1000" value="100" class="slider">
                     </div>
-                    <!-- R2 -->
                     <div class="interactive-input-group">
                         <div class="label-row">
                             <label for="r2" data-i18n="r2_label">R2 [Ω]</label>
@@ -66,7 +61,6 @@
                         </div>
                         <input type="range" id="r2-slider" min="1" max="1000" value="100" class="slider">
                     </div>
-                    <!-- R3 -->
                     <div class="interactive-input-group">
                         <div class="label-row">
                             <label for="r3" data-i18n="r3_label">R3 [Ω]</label>
@@ -74,7 +68,6 @@
                         </div>
                         <input type="range" id="r3-slider" min="1" max="1000" value="150" class="slider">
                     </div>
-                    <!-- R4 -->
                     <div class="interactive-input-group">
                         <div class="label-row">
                             <label for="r4" data-i18n="r4_label">R4 [Ω]</label>
@@ -82,7 +75,6 @@
                         </div>
                         <input type="range" id="r4-slider" min="1" max="1000" value="150" class="slider">
                     </div>
-                    <!-- R5 -->
                     <div class="interactive-input-group full-width">
                         <div class="label-row">
                             <label for="r5" data-i18n="r5_label">R5 (Galvanometer / Arm M-N) [Ω]</label>
@@ -92,21 +84,17 @@
                     </div>
                 </div>
 
-                <!-- Notes Section -->
                 <div class="notes-container">
                     <label for="lab-notes" data-i18n="lab_notes_label">📝 Lab Notes & Observations</label>
                     <textarea id="lab-notes" data-i18n-placeholder="lab_notes_placeholder" placeholder="Type your experimental notes or formulas here..."></textarea>
                 </div>
             </section>
 
-            <!-- Visualizer & Results (Right) -->
             <section class="panel visual-panel">
                 <div class="circuit-viewport">
                     <svg id="bridge-svg" viewBox="0 0 520 280" width="100%" height="100%">
-                        <!-- Connected Circuit Wires -->
                         <path class="circuit-line" d="M 40 140 H 135 M 205 70 H 230 M 260 70 H 305 M 205 210 H 230 M 260 210 H 305 M 375 140 H 460 M 245 70 V 100 M 245 180 V 210 M 135 70 H 205 M 135 210 H 205 M 305 70 H 375 M 305 210 H 375 M 135 70 V 140 M 135 140 V 210 M 375 70 V 140 M 375 140 V 210" />
                         
-                        <!-- Pulsed Current Flow Overlays -->
                         <path id="flow-input" class="current-flow" d="M 40 140 H 135" />
                         <path id="flow-r1" class="current-flow" d="M 135 70 H 205" />
                         <path id="flow-r3" class="current-flow" d="M 135 210 H 205" />
@@ -115,34 +103,27 @@
                         <path id="flow-r4" class="current-flow" d="M 305 210 H 375" />
                         <path id="flow-output" class="current-flow" d="M 375 140 H 460" />
 
-                        <!-- Resistor Rectangles -->
                         <rect x="135" y="55" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="135" y="195" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="230" y="100" width="30" height="80" rx="4" class="resistor-box" />
                         <rect x="305" y="55" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="305" y="195" width="70" height="30" rx="4" class="resistor-box" />
 
-                        <!-- Labels -->
                         <text x="170" y="75" text-anchor="middle" class="svg-label">R1</text>
                         <text x="170" y="215" text-anchor="middle" class="svg-label">R3</text>
                         <text x="245" y="144" text-anchor="middle" class="svg-label">R5</text>
                         <text x="340" y="75" text-anchor="middle" class="svg-label">R2</text>
                         <text x="340" y="215" text-anchor="middle" class="svg-label">R4</text>
 
-                        <!-- Nodes -->
                         <circle cx="135" cy="140" r="5" class="circuit-node" />
                         <text x="120" y="130" class="node-label">A</text>
-
                         <circle cx="375" cy="140" r="5" class="circuit-node" />
                         <text x="385" y="130" class="node-label">B</text>
-
                         <circle cx="245" cy="70" r="5" class="circuit-node" />
                         <text x="245" y="55" text-anchor="middle" class="node-label">M</text>
-
                         <circle cx="245" cy="210" r="5" class="circuit-node" />
                         <text x="245" y="230" text-anchor="middle" class="node-label">N</text>
 
-                        <!-- Source Direction Arrows -->
                         <polygon points="85,135 95,140 85,145" fill="var(--accent)" />
                         <polygon points="415,135 425,140 415,145" fill="var(--accent)" />
                     </svg>
@@ -151,7 +132,6 @@
                 <div class="results-card">
                     <div class="results-header">
                         <h3 data-i18n="analysis_results">Analysis Results</h3>
-                        <!-- Trạng thái (status) sẽ được script.js cập nhật tự động nên không gắn cứng data-i18n ở đây -->
                         <div id="status-badge" class="status-badge unbalanced">Bridge Unbalanced</div>
                     </div>
                     
@@ -182,7 +162,6 @@
                         </div>
                     </div>
 
-                    <!-- Detailed Results Table -->
                     <div class="detailed-table-container">
                         <table class="detailed-table">
                             <thead>
@@ -192,11 +171,28 @@
                                     <th data-i18n="voltage_th">Voltage (U)</th>
                                 </tr>
                             </thead>
-                            <tbody id="detailed-tbody">
-                                <!-- Populated dynamically by script.js -->
-                            </tbody>
+                            <tbody id="detailed-tbody"></tbody>
                         </table>
                     </div>
+
+                    <!-- Nút và Khung hiển thị Lời giải -->
+                    <button id="toggle-solution-btn" class="solution-toggle-btn" data-i18n="show_solution">Show Step-by-Step Solution</button>
+                    
+                    <div id="solution-panel" class="step-by-step-panel">
+                        <p><strong data-i18n="eq_node_m">Node M Equation (Nodal Analysis):</strong></p>
+                        <div id="step-eq-m" class="equation-line"></div>
+                        
+                        <p><strong data-i18n="eq_node_n">Node N Equation (Nodal Analysis):</strong></p>
+                        <div id="step-eq-n" class="equation-line"></div>
+                        
+                        <p><strong data-i18n="solve_system">Solving the system yields:</strong></p>
+                        <div class="equation-line" style="background: transparent;">
+                            D = <span id="step-det"></span><br>
+                            V<sub>m</sub> = <span id="step-vm"></span> V<br>
+                            V<sub>n</sub> = <span id="step-vn"></span> V
+                        </div>
+                    </div>
+
                 </div>
             </section>
         </main>
