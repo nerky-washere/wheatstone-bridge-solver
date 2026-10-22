@@ -1,9 +1,69 @@
 let animationTimer = null;
+let currentLang = localStorage.getItem('wb_lang') || 'en';
+
+// Bộ từ điển Đa ngôn ngữ (Dictionary)
+const i18n = {
+    en: {
+        app_title: "WHEATSTONE BRIDGE SOLVER",
+        unique_visitors: "UNIQUE VISITORS:",
+        circuit_params: "Circuit Parameters",
+        load_preset: "Load Balanced Preset",
+        source_voltage: "Source Voltage (Vs) [V]",
+        r1_label: "R1 [Ω]",
+        r2_label: "R2 [Ω]",
+        r3_label: "R3 [Ω]",
+        r4_label: "R4 [Ω]",
+        r5_label: "R5 (Galvanometer / Arm M-N) [Ω]",
+        lab_notes_label: "📝 Lab Notes & Observations",
+        lab_notes_placeholder: "Type your experimental notes or formulas here...",
+        analysis_results: "Analysis Results",
+        req_label: "Equivalent Resistance (R<sub>eq</sub>)",
+        itotal_label: "Total Current (I<sub>in</sub>)",
+        vm_label: "Node M Voltage (V<sub>m</sub>)",
+        vn_label: "Node N Voltage (V<sub>n</sub>)",
+        ig_label: "Galvanometer Current (I<sub>g</sub> / I<sub>5</sub>)",
+        u5_label: "Voltage Drop (U<sub>5</sub>)",
+        branch_th: "Branch",
+        current_th: "Current (I)",
+        voltage_th: "Voltage (U)",
+        status_invalid: "Invalid Input",
+        status_balanced: "Bridge Balanced",
+        status_unbalanced: "Bridge Unbalanced"
+    },
+    vi: {
+        app_title: "BỘ GIẢI MẠCH CẦU WHEATSTONE",
+        unique_visitors: "LƯỢT TRUY CẬP:",
+        circuit_params: "Thông Số Mạch Điện",
+        load_preset: "Tải Mạch Cân Bằng Mẫu",
+        source_voltage: "Điện Áp Nguồn (Vs) [V]",
+        r1_label: "Điện trở R1 [Ω]",
+        r2_label: "Điện trở R2 [Ω]",
+        r3_label: "Điện trở R3 [Ω]",
+        r4_label: "Điện trở R4 [Ω]",
+        r5_label: "R5 (Điện kế / Nhánh M-N) [Ω]",
+        lab_notes_label: "📝 Ghi Chú & Thực Nghiệm",
+        lab_notes_placeholder: "Nhập ghi chú hoặc công thức thực nghiệm của bạn tại đây...",
+        analysis_results: "Kết Quả Phân Tích",
+        req_label: "Điện Trở Tương Đương (R<sub>eq</sub>)",
+        itotal_label: "Dòng Điện Tổng (I<sub>in</sub>)",
+        vm_label: "Điện Thế Nút M (V<sub>m</sub>)",
+        vn_label: "Điện Thế Nút N (V<sub>n</sub>)",
+        ig_label: "Dòng Qua Điện Kế (I<sub>g</sub> / I<sub>5</sub>)",
+        u5_label: "Độ Sụt Áp (U<sub>5</sub>)",
+        branch_th: "Nhánh",
+        current_th: "Dòng điện (I)",
+        voltage_th: "Điện áp (U)",
+        status_invalid: "Đầu Vào Không Hợp Lệ",
+        status_balanced: "Cầu Cân Bằng",
+        status_unbalanced: "Cầu Lệch (Không Cân Bằng)"
+    }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
+    initI18n();
     fetchVisitorCount();
 
-    // Setup real-time bidirectional binding & calculation triggers (Requirement 3)
+    // Setup real-time bidirectional binding & calculation triggers
     setupSyncInputAndSlider('vs', null);
     setupSyncInputAndSlider('r1', 'r1-slider');
     setupSyncInputAndSlider('r2', 'r2-slider');
@@ -18,9 +78,45 @@ document.addEventListener('DOMContentLoaded', () => {
     computeWheatstoneBridge();
     initThemeEngine();
 
-    // Start periodic 2.5-second animation pulse loop (Requirement 7)
+    // Start periodic 2.5-second animation pulse loop
     startAnimationLoop();
 });
+
+// --- QUẢN LÝ ĐA NGÔN NGỮ (I18N) ---
+function initI18n() {
+    const langToggle = document.getElementById('lang-toggle');
+    langToggle.textContent = currentLang === 'en' ? 'EN' : 'VN';
+    
+    langToggle.addEventListener('click', () => {
+        currentLang = currentLang === 'en' ? 'vi' : 'en';
+        langToggle.textContent = currentLang === 'en' ? 'EN' : 'VN';
+        localStorage.setItem('wb_lang', currentLang);
+        applyTranslations();
+        computeWheatstoneBridge(); // Cập nhật lại chuỗi trạng thái động
+    });
+    
+    applyTranslations();
+}
+
+function applyTranslations() {
+    const dict = i18n[currentLang];
+    
+    // Dịch các thẻ chứa nội dung HTML
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+            el.innerHTML = dict[key];
+        }
+    });
+    
+    // Dịch các thẻ có placeholder (textarea)
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (dict[key]) {
+            el.setAttribute('placeholder', dict[key]);
+        }
+    });
+}
 
 function setupSyncInputAndSlider(id, sliderId) {
     const input = document.getElementById(id);
@@ -54,19 +150,12 @@ async function fetchVisitorCount() {
         }
     } catch (err) {
         console.error("Counter fetch error:", err);
-        counterSpan.textContent = 'Connection Error';
+        counterSpan.textContent = 'Error';
     }
 }
 
 // Global state for current directions to use in animation
-let currentStates = {
-    I1: 0,
-    I2: 0,
-    I3: 0,
-    I4: 0,
-    I5: 0,
-    I_total: 0
-};
+let currentStates = { I1: 0, I2: 0, I3: 0, I4: 0, I5: 0, I_total: 0 };
 
 function computeWheatstoneBridge() {
     const Vs = parseFloat(document.getElementById('vs').value);
@@ -76,10 +165,12 @@ function computeWheatstoneBridge() {
     const R4 = parseFloat(document.getElementById('r4').value);
     const R5 = parseFloat(document.getElementById('r5').value);
 
-    // Input validation (Requirement 3 & 9)
+    const dict = i18n[currentLang];
+
+    // Input validation
     if (isNaN(Vs) || isNaN(R1) || isNaN(R2) || isNaN(R3) || isNaN(R4) || isNaN(R5) ||
         R1 <= 0 || R2 <= 0 || R3 <= 0 || R4 <= 0 || R5 <= 0) {
-        document.getElementById('status-badge').textContent = 'Invalid Input';
+        document.getElementById('status-badge').textContent = dict.status_invalid;
         document.getElementById('status-badge').className = 'status-badge unbalanced';
         return;
     }
@@ -105,7 +196,6 @@ function computeWheatstoneBridge() {
     const U3 = Vs - Vn;
     const I3 = U3 / R3;
 
-    // Signed current for R5: positive means M -> N, negative means N -> M
     const U5 = Vm - Vn;
     const I5 = U5 / R5;
 
@@ -118,7 +208,6 @@ function computeWheatstoneBridge() {
     const I_total = I1 + I3;
     const Req = I_total > 0 ? Vs / I_total : 0;
 
-    // Store states for animation renderer
     currentStates = { I1, I2, I3, I4, I5, I_total };
 
     // Balanced bridge detection (Tolerance < 0.01 mA)
@@ -134,10 +223,10 @@ function computeWheatstoneBridge() {
 
     const statusBadge = document.getElementById('status-badge');
     if (isBalanced) {
-        statusBadge.textContent = 'Bridge Balanced';
+        statusBadge.textContent = dict.status_balanced;
         statusBadge.className = 'status-badge balanced';
     } else {
-        statusBadge.textContent = 'Bridge Unbalanced';
+        statusBadge.textContent = dict.status_unbalanced;
         statusBadge.className = 'status-badge unbalanced';
     }
 
@@ -152,27 +241,22 @@ function computeWheatstoneBridge() {
     `;
 }
 
-// Requirement 7: Physically Meaningful Current-Flow Animation
+// Current-Flow Animation
 function startAnimationLoop() {
     if (animationTimer) clearInterval(animationTimer);
-
-    // Trigger pulse every 2.5 seconds
     animationTimer = setInterval(() => {
         triggerCurrentFlowPulse();
     }, 2500);
-
-    // Trigger initial pulse immediately
     triggerCurrentFlowPulse();
 }
 
 function triggerCurrentFlowPulse() {
-    const tolerance = 1e-5; // 0.01 mA threshold
+    const tolerance = 1e-5; 
 
     applyFlow('flow-input', currentStates.I_total > tolerance, true);
     applyFlow('flow-r1', Math.abs(currentStates.I1) > tolerance, currentStates.I1 >= 0);
     applyFlow('flow-r3', Math.abs(currentStates.I3) > tolerance, currentStates.I3 >= 0);
     
-    // R5 branch: suppress if balanced or negligible
     const isR5Active = Math.abs(currentStates.I5) > tolerance;
     applyFlow('flow-r5', isR5Active, currentStates.I5 >= 0);
 
@@ -186,7 +270,7 @@ function applyFlow(elementId, isActive, isForward) {
     if (!el) return;
 
     el.classList.remove('active-forward', 'active-reverse');
-    void el.offsetWidth; // Reflow reset
+    void el.offsetWidth; 
 
     if (isActive) {
         if (isForward) {
