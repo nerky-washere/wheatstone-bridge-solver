@@ -1,7 +1,7 @@
 let animationTimer = null;
 let currentLang = localStorage.getItem('wb_lang') || 'en';
 
-// Bộ từ điển Đa ngôn ngữ (Dictionary)
+// Bộ từ điển Đa ngôn ngữ (Dictionary) - Đã thêm từ vựng cho Lời giải
 const i18n = {
     en: {
         app_title: "WHEATSTONE BRIDGE SOLVER",
@@ -28,7 +28,12 @@ const i18n = {
         voltage_th: "Voltage (U)",
         status_invalid: "Invalid Input",
         status_balanced: "Bridge Balanced",
-        status_unbalanced: "Bridge Unbalanced"
+        status_unbalanced: "Bridge Unbalanced",
+        show_solution: "Show Step-by-Step Solution",
+        hide_solution: "Hide Solution",
+        eq_node_m: "Node M Equation (Nodal Analysis):",
+        eq_node_n: "Node N Equation (Nodal Analysis):",
+        solve_system: "Solving the matrix yields:"
     },
     vi: {
         app_title: "BỘ GIẢI MẠCH CẦU WHEATSTONE",
@@ -55,7 +60,12 @@ const i18n = {
         voltage_th: "Điện áp (U)",
         status_invalid: "Đầu Vào Không Hợp Lệ",
         status_balanced: "Cầu Cân Bằng",
-        status_unbalanced: "Cầu Lệch (Không Cân Bằng)"
+        status_unbalanced: "Cầu Lệch (Không Cân Bằng)",
+        show_solution: "Hiển Thị Lời Giải Chi Tiết",
+        hide_solution: "Ẩn Lời Giải",
+        eq_node_m: "Phương trình điện thế nút M:",
+        eq_node_n: "Phương trình điện thế nút N:",
+        solve_system: "Giải hệ phương trình ta được:"
     }
 };
 
@@ -63,7 +73,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initI18n();
     fetchVisitorCount();
 
-    // Setup real-time bidirectional binding & calculation triggers
     setupSyncInputAndSlider('vs', null);
     setupSyncInputAndSlider('r1', 'r1-slider');
     setupSyncInputAndSlider('r2', 'r2-slider');
@@ -74,15 +83,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const presetBtn = document.getElementById('preset-balanced');
     presetBtn.addEventListener('click', loadPreset);
 
-    // Initial calculation run
     computeWheatstoneBridge();
     initThemeEngine();
-
-    // Start periodic 2.5-second animation pulse loop
     startAnimationLoop();
 });
 
-// --- QUẢN LÝ ĐA NGÔN NGỮ (I18N) ---
 function initI18n() {
     const langToggle = document.getElementById('lang-toggle');
     langToggle.textContent = currentLang === 'en' ? 'EN' : 'VN';
@@ -92,7 +97,18 @@ function initI18n() {
         langToggle.textContent = currentLang === 'en' ? 'EN' : 'VN';
         localStorage.setItem('wb_lang', currentLang);
         applyTranslations();
-        computeWheatstoneBridge(); // Cập nhật lại chuỗi trạng thái động
+        computeWheatstoneBridge(); 
+    });
+
+    // Cài đặt nút Ẩn/Hiện lời giải
+    const toggleBtn = document.getElementById('toggle-solution-btn');
+    const solutionPanel = document.getElementById('solution-panel');
+    
+    toggleBtn.addEventListener('click', () => {
+        const isVisible = solutionPanel.classList.toggle('visible');
+        // Thay đổi data-i18n để text tự động dịch theo ngôn ngữ hiện tại
+        toggleBtn.setAttribute('data-i18n', isVisible ? 'hide_solution' : 'show_solution');
+        applyTranslations();
     });
     
     applyTranslations();
@@ -101,20 +117,14 @@ function initI18n() {
 function applyTranslations() {
     const dict = i18n[currentLang];
     
-    // Dịch các thẻ chứa nội dung HTML
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
-        if (dict[key]) {
-            el.innerHTML = dict[key];
-        }
+        if (dict[key]) el.innerHTML = dict[key];
     });
     
-    // Dịch các thẻ có placeholder (textarea)
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
-        if (dict[key]) {
-            el.setAttribute('placeholder', dict[key]);
-        }
+        if (dict[key]) el.setAttribute('placeholder', dict[key]);
     });
 }
 
@@ -154,7 +164,6 @@ async function fetchVisitorCount() {
     }
 }
 
-// Global state for current directions to use in animation
 let currentStates = { I1: 0, I2: 0, I3: 0, I4: 0, I5: 0, I_total: 0 };
 
 function computeWheatstoneBridge() {
@@ -167,7 +176,6 @@ function computeWheatstoneBridge() {
 
     const dict = i18n[currentLang];
 
-    // Input validation
     if (isNaN(Vs) || isNaN(R1) || isNaN(R2) || isNaN(R3) || isNaN(R4) || isNaN(R5) ||
         R1 <= 0 || R2 <= 0 || R3 <= 0 || R4 <= 0 || R5 <= 0) {
         document.getElementById('status-badge').textContent = dict.status_invalid;
@@ -175,7 +183,6 @@ function computeWheatstoneBridge() {
         return;
     }
 
-    // Nodal Analysis Equations
     const a11 = (1 / R1) + (1 / R2) + (1 / R5);
     const a12 = -1 / R5;
     const b1 = Vs / R1;
@@ -210,10 +217,8 @@ function computeWheatstoneBridge() {
 
     currentStates = { I1, I2, I3, I4, I5, I_total };
 
-    // Balanced bridge detection (Tolerance < 0.01 mA)
     const isBalanced = Math.abs(I5 * 1000) < 0.01;
 
-    // Update Result Cards
     document.getElementById('vc-result').textContent = Vm.toFixed(3) + ' V';
     document.getElementById('vd-result').textContent = Vn.toFixed(3) + ' V';
     document.getElementById('ig-result').textContent = (I5 * 1000).toFixed(3) + ' mA';
@@ -230,7 +235,6 @@ function computeWheatstoneBridge() {
         statusBadge.className = 'status-badge unbalanced';
     }
 
-    // Update Detailed Table
     const tbody = document.getElementById('detailed-tbody');
     tbody.innerHTML = `
         <tr><td><strong>R1</strong></td><td>${I1.toFixed(4)} A</td><td>${Math.abs(U1).toFixed(3)} V</td></tr>
@@ -239,9 +243,18 @@ function computeWheatstoneBridge() {
         <tr><td><strong>R4</strong></td><td>${I4.toFixed(4)} A</td><td>${Math.abs(U4).toFixed(3)} V</td></tr>
         <tr><td><strong>R5 (M-N)</strong></td><td>${(I5 * 1000).toFixed(3)} mA</td><td>${Math.abs(U5).toFixed(3)} V</td></tr>
     `;
+
+    // --- BƠM DỮ LIỆU LỜI GIẢI CHI TIẾT ---
+    const eqM = `(${a11.toFixed(4)})*V<sub>m</sub> - (${Math.abs(a12).toFixed(4)})*V<sub>n</sub> = ${b1.toFixed(4)}`;
+    const eqN = `-(${Math.abs(a21).toFixed(4)})*V<sub>m</sub> + (${a22.toFixed(4)})*V<sub>n</sub> = ${b2.toFixed(4)}`;
+
+    document.getElementById('step-eq-m').innerHTML = eqM;
+    document.getElementById('step-eq-n').innerHTML = eqN;
+    document.getElementById('step-det').innerHTML = D.toExponential(4);
+    document.getElementById('step-vm').innerHTML = Vm.toFixed(4);
+    document.getElementById('step-vn').innerHTML = Vn.toFixed(4);
 }
 
-// Current-Flow Animation
 function startAnimationLoop() {
     if (animationTimer) clearInterval(animationTimer);
     animationTimer = setInterval(() => {
