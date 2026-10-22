@@ -8,7 +8,6 @@
 </head>
 <body>
     <div class="app-container">
-        <!-- Header -->
         <header class="app-header">
             <div class="logo-area">
                 <span class="pulse-dot"></span>
@@ -43,38 +42,23 @@
                 </div>
                 <div class="resistors-interactive-grid">
                     <div class="interactive-input-group">
-                        <div class="label-row">
-                            <label for="r1" data-i18n="r1_label">R1 [Ω]</label>
-                            <input type="number" id="r1" value="100" step="1">
-                        </div>
+                        <div class="label-row"><label for="r1" data-i18n="r1_label">R1 [Ω]</label><input type="number" id="r1" value="100" step="1"></div>
                         <input type="range" id="r1-slider" min="1" max="1000" value="100" class="slider">
                     </div>
                     <div class="interactive-input-group">
-                        <div class="label-row">
-                            <label for="r2" data-i18n="r2_label">R2 [Ω]</label>
-                            <input type="number" id="r2" value="100" step="1">
-                        </div>
+                        <div class="label-row"><label for="r2" data-i18n="r2_label">R2 [Ω]</label><input type="number" id="r2" value="100" step="1"></div>
                         <input type="range" id="r2-slider" min="1" max="1000" value="100" class="slider">
                     </div>
                     <div class="interactive-input-group">
-                        <div class="label-row">
-                            <label for="r3" data-i18n="r3_label">R3 [Ω]</label>
-                            <input type="number" id="r3" value="150" step="1">
-                        </div>
+                        <div class="label-row"><label for="r3" data-i18n="r3_label">R3 [Ω]</label><input type="number" id="r3" value="150" step="1"></div>
                         <input type="range" id="r3-slider" min="1" max="1000" value="150" class="slider">
                     </div>
                     <div class="interactive-input-group">
-                        <div class="label-row">
-                            <label for="r4" data-i18n="r4_label">R4 [Ω]</label>
-                            <input type="number" id="r4" value="150" step="1">
-                        </div>
+                        <div class="label-row"><label for="r4" data-i18n="r4_label">R4 [Ω]</label><input type="number" id="r4" value="150" step="1"></div>
                         <input type="range" id="r4-slider" min="1" max="1000" value="150" class="slider">
                     </div>
                     <div class="interactive-input-group full-width">
-                        <div class="label-row">
-                            <label for="r5" data-i18n="r5_label">R5 (Galvanometer / Arm M-N) [Ω]</label>
-                            <input type="number" id="r5" value="220" step="1">
-                        </div>
+                        <div class="label-row"><label for="r5" data-i18n="r5_label">R5 (Galvanometer / Arm M-N) [Ω]</label><input type="number" id="r5" value="220" step="1"></div>
                         <input type="range" id="r5-slider" min="1" max="1000" value="220" class="slider">
                     </div>
                 </div>
@@ -125,30 +109,12 @@
                     </div>
                     
                     <div class="metrics-grid">
-                        <div class="metric-item">
-                            <span data-i18n="req_label">Equivalent Resistance (R<sub>eq</sub>)</span>
-                            <strong id="req-result">0.00 Ω</strong>
-                        </div>
-                        <div class="metric-item">
-                            <span data-i18n="itotal_label">Total Current (I<sub>in</sub>)</span>
-                            <strong id="itotal-result">0.00 A</strong>
-                        </div>
-                        <div class="metric-item">
-                            <span data-i18n="vm_label">Node M Voltage (V<sub>m</sub>)</span>
-                            <strong id="vc-result">0.00 V</strong>
-                        </div>
-                        <div class="metric-item">
-                            <span data-i18n="vn_label">Node N Voltage (V<sub>n</sub>)</span>
-                            <strong id="vd-result">0.00 V</strong>
-                        </div>
-                        <div class="metric-item highlight-box">
-                            <span data-i18n="ig_label">Galvanometer Current (I<sub>g</sub> / I<sub>5</sub>)</span>
-                            <strong id="ig-result">0.00 mA</strong>
-                        </div>
-                        <div class="metric-item">
-                            <span data-i18n="u5_label">Voltage Drop (U<sub>5</sub>)</span>
-                            <strong id="u5-result">0.00 V</strong>
-                        </div>
+                        <div class="metric-item"><span data-i18n="req_label">Equivalent Resistance (R<sub>eq</sub>)</span><strong id="req-result">0.00 Ω</strong></div>
+                        <div class="metric-item"><span data-i18n="itotal_label">Total Current (I<sub>in</sub>)</span><strong id="itotal-result">0.00 A</strong></div>
+                        <div class="metric-item"><span data-i18n="vm_label">Node M Voltage (V<sub>m</sub>)</span><strong id="vc-result">0.00 V</strong></div>
+                        <div class="metric-item"><span data-i18n="vn_label">Node N Voltage (V<sub>n</sub>)</span><strong id="vd-result">0.00 V</strong></div>
+                        <div class="metric-item highlight-box"><span data-i18n="ig_label">Galvanometer Current (I<sub>g</sub> / I<sub>5</sub>)</span><strong id="ig-result">0.00 mA</strong></div>
+                        <div class="metric-item"><span data-i18n="u5_label">Voltage Drop (U<sub>5</sub>)</span><strong id="u5-result">0.00 V</strong></div>
                     </div>
 
                     <div class="detailed-table-container">
@@ -164,39 +130,44 @@
                         </table>
                     </div>
 
-                    <!-- Nút và Khung hiển thị Lời giải CHI TIẾT -->
+                    <!-- Nút và Khung hiển thị Lời giải Kirchhoff 5 phương trình -->
                     <button id="toggle-solution-btn" class="solution-toggle-btn" data-i18n="show_solution">Show Step-by-Step Solution</button>
                     
                     <div id="solution-panel" class="step-by-step-panel">
-                        <p><strong data-i18n="step_1_title">Step 1: Nodal Analysis Equations</strong></p>
-                        <p data-i18n="step_1_desc" style="color: var(--text-muted); font-size: 0.8rem;">Apply Kirchhoff's Current Law (KCL) at nodes M and N.</p>
+                        <p><strong data-i18n="step_1_title">Step 1: System of Kirchhoff's Equations (KCL & KVL)</strong></p>
+                        <p data-i18n="step_1_desc" style="color: var(--text-muted); font-size: 0.8rem;">Formulating the 5x5 matrix based on branch currents (I1 to I5).</p>
                         
                         <div class="equation-block">
-                            <div class="theory-eq">(1/R<sub>1</sub> + 1/R<sub>2</sub> + 1/R<sub>5</sub>)V<sub>m</sub> - (1/R<sub>5</sub>)V<sub>n</sub> = V<sub>s</sub>/R<sub>1</sub></div>
-                            <div id="step-eq-m-sub" class="sub-eq"></div>
-                            <div id="step-eq-m" class="equation-line"></div>
-                        </div>
-                        
-                        <div class="equation-block">
-                            <div class="theory-eq">-(1/R<sub>5</sub>)V<sub>m</sub> + (1/R<sub>3</sub> + 1/R<sub>4</sub> + 1/R<sub>5</sub>)V<sub>n</sub> = V<sub>s</sub>/R<sub>3</sub></div>
-                            <div id="step-eq-n-sub" class="sub-eq"></div>
-                            <div id="step-eq-n" class="equation-line"></div>
-                        </div>
-                        
-                        <p><strong data-i18n="step_2_title">Step 2: Solve the System</strong></p>
-                        <div class="equation-block" style="background: transparent; border: none; padding: 0;">
-                            <div class="equation-line">
-                                V<sub>m</sub> = <span id="step-vm"></span> V<br>
-                                V<sub>n</sub> = <span id="step-vn"></span> V
-                            </div>
+                            <!-- KCL Nodes -->
+                            <div class="theory-eq" data-i18n="kcl_nodes">KCL at Nodes M & N:</div>
+                            <div class="sub-eq">Node M: I<sub>1</sub> - I<sub>2</sub> - I<sub>5</sub> = 0</div>
+                            <div class="sub-eq" style="margin-bottom: 12px;">Node N: I<sub>3</sub> - I<sub>4</sub> + I<sub>5</sub> = 0</div>
+                            
+                            <!-- KVL Loops -->
+                            <div class="theory-eq" data-i18n="kvl_loops">KVL for 3 Loops:</div>
+                            <div class="sub-eq">Loop 1 (A-M-N-A): R<sub>1</sub>I<sub>1</sub> - R<sub>3</sub>I<sub>3</sub> + R<sub>5</sub>I<sub>5</sub> = 0</div>
+                            <div class="sub-eq">Loop 2 (M-B-N-M): -R<sub>2</sub>I<sub>2</sub> + R<sub>4</sub>I<sub>4</sub> + R<sub>5</sub>I<sub>5</sub> = 0</div>
+                            <div class="sub-eq">Loop 3 (A-M-B): R<sub>1</sub>I<sub>1</sub> + R<sub>2</sub>I<sub>2</sub> = V<sub>s</sub></div>
                         </div>
 
-                        <p><strong data-i18n="step_3_title">Step 3: Calculate Galvanometer Current</strong></p>
-                        <p data-i18n="step_3_desc" style="color: var(--text-muted); font-size: 0.8rem;">The current through R5 is the voltage difference divided by R5.</p>
+                        <p><strong data-i18n="step_2_title">Step 2: Substitute Real Values</strong></p>
                         <div class="equation-block">
-                            <div class="theory-eq">I<sub>5</sub> = (V<sub>m</sub> - V<sub>n</sub>) / R<sub>5</sub></div>
-                            <div id="step-eq-i5-sub" class="sub-eq"></div>
-                            <div id="step-i5" class="equation-line"></div>
+                            <div id="sys-eq1" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
+                            <div id="sys-eq2" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
+                            <div id="sys-eq3" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
+                            <div id="sys-eq4" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
+                            <div id="sys-eq5" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
+                        </div>
+                        
+                        <p><strong data-i18n="step_3_title">Step 3: Solved Branch Currents</strong></p>
+                        <div class="equation-block" style="background: transparent; border: none; padding: 0;">
+                            <div class="equation-line">
+                                I<sub>1</sub> = <span id="step-i1"></span> A<br>
+                                I<sub>2</sub> = <span id="step-i2"></span> A<br>
+                                I<sub>3</sub> = <span id="step-i3"></span> A<br>
+                                I<sub>4</sub> = <span id="step-i4"></span> A<br>
+                                I<sub>5</sub> = <span id="step-i5"></span> A
+                            </div>
                         </div>
                     </div>
 
