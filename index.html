@@ -34,7 +34,10 @@
             <section class="panel control-panel">
                 <div class="panel-header">
                     <h2 data-i18n="circuit_params">Circuit Parameters</h2>
-                    <button id="preset-balanced" class="preset-btn" data-i18n="load_preset">Load Balanced Preset</button>
+                    <div>
+                        <button id="preset-balanced" class="preset-btn" data-i18n="load_preset">Load Balanced</button>
+                        <button id="open-theory-btn" class="preset-btn theory-btn" data-i18n="theory_btn">📖 Cheat Sheet</button>
+                    </div>
                 </div>
                 <div class="input-group main-voltage">
                     <label for="vs" data-i18n="source_voltage">Source Voltage (Vs) [V]</label>
@@ -58,13 +61,13 @@
                         <input type="range" id="r4-slider" min="1" max="1000" value="150" class="slider">
                     </div>
                     <div class="interactive-input-group full-width">
-                        <div class="label-row"><label for="r5" data-i18n="r5_label">R5 (Galvanometer / Arm M-N) [Ω]</label><input type="number" id="r5" value="220" step="1"></div>
+                        <div class="label-row"><label for="r5" data-i18n="r5_label">R5 (Galvanometer) [Ω]</label><input type="number" id="r5" value="220" step="1"></div>
                         <input type="range" id="r5-slider" min="1" max="1000" value="220" class="slider">
                     </div>
                 </div>
                 <div class="notes-container">
-                    <label for="lab-notes" data-i18n="lab_notes_label">📝 Lab Notes & Observations</label>
-                    <textarea id="lab-notes" data-i18n-placeholder="lab_notes_placeholder" placeholder="Type your experimental notes or formulas here..."></textarea>
+                    <label for="lab-notes" data-i18n="lab_notes_label">📝 Lab Notes</label>
+                    <textarea id="lab-notes" data-i18n-placeholder="lab_notes_placeholder" placeholder="Type formulas..."></textarea>
                 </div>
             </section>
 
@@ -107,14 +110,13 @@
                         <h3 data-i18n="analysis_results">Analysis Results</h3>
                         <div id="status-badge" class="status-badge unbalanced">Bridge Unbalanced</div>
                     </div>
-                    
                     <div class="metrics-grid">
-                        <div class="metric-item"><span data-i18n="req_label">Equivalent Resistance (R<sub>eq</sub>)</span><strong id="req-result">0.00 Ω</strong></div>
-                        <div class="metric-item"><span data-i18n="itotal_label">Total Current (I<sub>in</sub>)</span><strong id="itotal-result">0.00 A</strong></div>
-                        <div class="metric-item"><span data-i18n="vm_label">Node M Voltage (V<sub>m</sub>)</span><strong id="vc-result">0.00 V</strong></div>
-                        <div class="metric-item"><span data-i18n="vn_label">Node N Voltage (V<sub>n</sub>)</span><strong id="vd-result">0.00 V</strong></div>
-                        <div class="metric-item highlight-box"><span data-i18n="ig_label">Galvanometer Current (I<sub>g</sub> / I<sub>5</sub>)</span><strong id="ig-result">0.00 mA</strong></div>
-                        <div class="metric-item"><span data-i18n="u5_label">Voltage Drop (U<sub>5</sub>)</span><strong id="u5-result">0.00 V</strong></div>
+                        <div class="metric-item"><span data-i18n="req_label">Equivalent Resistance</span><strong id="req-result">0.00 Ω</strong></div>
+                        <div class="metric-item"><span data-i18n="itotal_label">Total Current</span><strong id="itotal-result">0.00 A</strong></div>
+                        <div class="metric-item"><span data-i18n="vm_label">Node M Voltage</span><strong id="vc-result">0.00 V</strong></div>
+                        <div class="metric-item"><span data-i18n="vn_label">Node N Voltage</span><strong id="vd-result">0.00 V</strong></div>
+                        <div class="metric-item highlight-box"><span data-i18n="ig_label">Galvanometer Current</span><strong id="ig-result">0.00 mA</strong></div>
+                        <div class="metric-item"><span data-i18n="u5_label">Voltage Drop</span><strong id="u5-result">0.00 V</strong></div>
                     </div>
 
                     <div class="detailed-table-container">
@@ -130,26 +132,18 @@
                         </table>
                     </div>
 
-                    <!-- Nút và Khung hiển thị Lời giải Kirchhoff 5 phương trình -->
                     <button id="toggle-solution-btn" class="solution-toggle-btn" data-i18n="show_solution">Show Step-by-Step Solution</button>
-                    
                     <div id="solution-panel" class="step-by-step-panel">
-                        <p><strong data-i18n="step_1_title">Step 1: System of Kirchhoff's Equations (KCL & KVL)</strong></p>
-                        <p data-i18n="step_1_desc" style="color: var(--text-muted); font-size: 0.8rem;">Formulating the 5x5 matrix based on branch currents (I1 to I5).</p>
-                        
+                        <p><strong data-i18n="step_1_title">Step 1: System of Equations</strong></p>
                         <div class="equation-block">
-                            <!-- KCL Nodes -->
                             <div class="theory-eq" data-i18n="kcl_nodes">KCL at Nodes M & N:</div>
                             <div class="sub-eq">Node M: I<sub>1</sub> - I<sub>2</sub> - I<sub>5</sub> = 0</div>
                             <div class="sub-eq" style="margin-bottom: 12px;">Node N: I<sub>3</sub> - I<sub>4</sub> + I<sub>5</sub> = 0</div>
-                            
-                            <!-- KVL Loops -->
                             <div class="theory-eq" data-i18n="kvl_loops">KVL for 3 Loops:</div>
                             <div class="sub-eq">Loop 1 (A-M-N-A): R<sub>1</sub>I<sub>1</sub> - R<sub>3</sub>I<sub>3</sub> + R<sub>5</sub>I<sub>5</sub> = 0</div>
                             <div class="sub-eq">Loop 2 (M-B-N-M): -R<sub>2</sub>I<sub>2</sub> + R<sub>4</sub>I<sub>4</sub> + R<sub>5</sub>I<sub>5</sub> = 0</div>
                             <div class="sub-eq">Loop 3 (A-M-B): R<sub>1</sub>I<sub>1</sub> + R<sub>2</sub>I<sub>2</sub> = V<sub>s</sub></div>
                         </div>
-
                         <p><strong data-i18n="step_2_title">Step 2: Substitute Real Values</strong></p>
                         <div class="equation-block">
                             <div id="sys-eq1" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
@@ -158,7 +152,6 @@
                             <div id="sys-eq4" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
                             <div id="sys-eq5" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
                         </div>
-                        
                         <p><strong data-i18n="step_3_title">Step 3: Solved Branch Currents</strong></p>
                         <div class="equation-block" style="background: transparent; border: none; padding: 0;">
                             <div class="equation-line">
@@ -170,11 +163,44 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
             </section>
         </main>
     </div>
+
+    <!-- MODAL LÝ THUYẾT VẬT LÝ 11 -->
+    <div id="theory-modal" class="theory-modal">
+        <div class="modal-content">
+            <button id="close-theory-btn" class="close-modal-btn">X</button>
+            <h3 data-i18n="modal_title">Bí Kíp Giải Mạch Cầu (Vật Lý 11)</h3>
+            
+            <h4 data-i18n="modal_h1">1. Nhận dạng mạch cầu và phân loại</h4>
+            <p data-i18n="modal_p1">Mạch cầu gồm 2 nút chính (M và N) mà điện trở R5 được mắc giữa 2 nút đó.</p>
+            <ul>
+                <li data-i18n="modal_l1"><strong>Mạch cầu cân bằng:</strong> Khi R1.R4 = R2.R3</li>
+                <li data-i18n="modal_l2"><strong>Mạch cầu không cân bằng:</strong> Khi R1.R4 ≠ R2.R3</li>
+            </ul>
+
+            <h4 data-i18n="modal_h2">2. Phương pháp giải mạch cầu cân bằng</h4>
+            <p data-i18n="modal_p2">Khi mạch cân bằng, hiệu điện thế U5 = 0 và cường độ dòng điện I5 = 0.</p>
+            <ul>
+                <li data-i18n="modal_l3"><strong>Bước 1:</strong> Kiểm tra điều kiện R1.R4 = R2.R3.</li>
+                <li data-i18n="modal_l4"><strong>Bước 2:</strong> Bỏ qua R5 khỏi mạch điện.</li>
+                <li data-i18n="modal_l5"><strong>Bước 3:</strong> Vẽ lại mạch: (R1 nt R3) // (R2 nt R4).</li>
+                <li data-i18n="modal_l6"><strong>Bước 4:</strong> Tính Rtđ = (R13 * R24) / (R13 + R24).</li>
+                <li data-i18n="modal_l7"><strong>Bước 5:</strong> Áp dụng định luật Ôm để tìm I, U.</li>
+            </ul>
+
+            <h4 data-i18n="modal_h3">3. Phương pháp giải mạch cầu không cân bằng (Khuyên dùng)</h4>
+            <p data-i18n="modal_p3">Sử dụng định luật Kiếc-sôp (Kirchhoff 1 & 2):</p>
+            <ul>
+                <li data-i18n="modal_l8"><strong>Bước 1:</strong> Đặt ẩn cường độ dòng điện trên các nhánh (I1 đến I5). Dùng quy tắc nút (KCL) để lập phương trình.</li>
+                <li data-i18n="modal_l9"><strong>Bước 2:</strong> Viết phương trình hiệu điện thế (KVL) theo các vòng kín của mạch.</li>
+                <li data-i18n="modal_l10"><strong>Bước 3:</strong> Giải hệ phương trình 5 ẩn để tìm các dòng điện.</li>
+            </ul>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
