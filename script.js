@@ -1,7 +1,7 @@
 let animationTimer = null;
 let currentLang = localStorage.getItem('wb_lang') || 'en';
 
-// Bộ từ điển Đa ngôn ngữ (Dictionary) - Đã thêm từ vựng cho Lời giải
+// Bộ từ điển Đa ngôn ngữ (Nâng cấp cấu trúc Lời giải)
 const i18n = {
     en: {
         app_title: "WHEATSTONE BRIDGE SOLVER",
@@ -31,9 +31,11 @@ const i18n = {
         status_unbalanced: "Bridge Unbalanced",
         show_solution: "Show Step-by-Step Solution",
         hide_solution: "Hide Solution",
-        eq_node_m: "Node M Equation (Nodal Analysis):",
-        eq_node_n: "Node N Equation (Nodal Analysis):",
-        solve_system: "Solving the matrix yields:"
+        step_1_title: "Step 1: Nodal Analysis Equations",
+        step_1_desc: "Apply Kirchhoff's Current Law (KCL) at nodes M and N.",
+        step_2_title: "Step 2: Solve the System",
+        step_3_title: "Step 3: Calculate Galvanometer Current",
+        step_3_desc: "The current through R5 is the voltage difference divided by R5."
     },
     vi: {
         app_title: "BỘ GIẢI MẠCH CẦU WHEATSTONE",
@@ -63,9 +65,11 @@ const i18n = {
         status_unbalanced: "Cầu Lệch (Không Cân Bằng)",
         show_solution: "Hiển Thị Lời Giải Chi Tiết",
         hide_solution: "Ẩn Lời Giải",
-        eq_node_m: "Phương trình điện thế nút M:",
-        eq_node_n: "Phương trình điện thế nút N:",
-        solve_system: "Giải hệ phương trình ta được:"
+        step_1_title: "Bước 1: Lập Hệ Phương Trình Nút",
+        step_1_desc: "Áp dụng định luật Kirchhoff 1 (KCL) tại nút M và N.",
+        step_2_title: "Bước 2: Giải Hệ Phương Trình",
+        step_3_title: "Bước 3: Tính Dòng Qua Điện Kế",
+        step_3_desc: "Dòng điện chạy qua nhánh R5 (từ M sang N) bằng độ lệch điện áp chia cho R5."
     }
 };
 
@@ -100,13 +104,11 @@ function initI18n() {
         computeWheatstoneBridge(); 
     });
 
-    // Cài đặt nút Ẩn/Hiện lời giải
     const toggleBtn = document.getElementById('toggle-solution-btn');
     const solutionPanel = document.getElementById('solution-panel');
     
     toggleBtn.addEventListener('click', () => {
         const isVisible = solutionPanel.classList.toggle('visible');
-        // Thay đổi data-i18n để text tự động dịch theo ngôn ngữ hiện tại
         toggleBtn.setAttribute('data-i18n', isVisible ? 'hide_solution' : 'show_solution');
         applyTranslations();
     });
@@ -244,15 +246,22 @@ function computeWheatstoneBridge() {
         <tr><td><strong>R5 (M-N)</strong></td><td>${(I5 * 1000).toFixed(3)} mA</td><td>${Math.abs(U5).toFixed(3)} V</td></tr>
     `;
 
-    // --- BƠM DỮ LIỆU LỜI GIẢI CHI TIẾT ---
-    const eqM = `(${a11.toFixed(4)})*V<sub>m</sub> - (${Math.abs(a12).toFixed(4)})*V<sub>n</sub> = ${b1.toFixed(4)}`;
-    const eqN = `-(${Math.abs(a21).toFixed(4)})*V<sub>m</sub> + (${a22.toFixed(4)})*V<sub>n</sub> = ${b2.toFixed(4)}`;
-
-    document.getElementById('step-eq-m').innerHTML = eqM;
-    document.getElementById('step-eq-n').innerHTML = eqN;
-    document.getElementById('step-det').innerHTML = D.toExponential(4);
+    // --- BƠM DỮ LIỆU LỜI GIẢI CHI TIẾT (NÂNG CẤP) ---
+    // Nút M
+    document.getElementById('step-eq-m-sub').innerHTML = `(1/${R1} + 1/${R2} + 1/${R5})V<sub>m</sub> - (1/${R5})V<sub>n</sub> = ${Vs}/${R1}`;
+    document.getElementById('step-eq-m').innerHTML = `(${a11.toFixed(4)})*V<sub>m</sub> - (${Math.abs(a12).toFixed(4)})*V<sub>n</sub> = ${b1.toFixed(4)}`;
+    
+    // Nút N
+    document.getElementById('step-eq-n-sub').innerHTML = `-(1/${R5})V<sub>m</sub> + (1/${R3} + 1/${R4} + 1/${R5})V<sub>n</sub> = ${Vs}/${R3}`;
+    document.getElementById('step-eq-n').innerHTML = `-(${Math.abs(a21).toFixed(4)})*V<sub>m</sub> + (${a22.toFixed(4)})*V<sub>n</sub> = ${b2.toFixed(4)}`;
+    
+    // Giải hệ
     document.getElementById('step-vm').innerHTML = Vm.toFixed(4);
     document.getElementById('step-vn').innerHTML = Vn.toFixed(4);
+
+    // Tính dòng I5
+    document.getElementById('step-eq-i5-sub').innerHTML = `I<sub>5</sub> = (${Vm.toFixed(4)} - ${Vn.toFixed(4)}) / ${R5}`;
+    document.getElementById('step-i5').innerHTML = `I<sub>5</sub> = ${I5.toFixed(5)} A &nbsp; (${(I5 * 1000).toFixed(2)} mA)`;
 }
 
 function startAnimationLoop() {
