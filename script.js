@@ -1,7 +1,6 @@
 let animationTimer = null;
 let currentLang = localStorage.getItem('wb_lang') || 'en';
 
-// Bộ từ điển Đa ngôn ngữ (Nâng cấp cấu trúc Lời giải)
 const i18n = {
     en: {
         app_title: "WHEATSTONE BRIDGE SOLVER",
@@ -31,11 +30,12 @@ const i18n = {
         status_unbalanced: "Bridge Unbalanced",
         show_solution: "Show Step-by-Step Solution",
         hide_solution: "Hide Solution",
-        step_1_title: "Step 1: Nodal Analysis Equations",
-        step_1_desc: "Apply Kirchhoff's Current Law (KCL) at nodes M and N.",
-        step_2_title: "Step 2: Solve the System",
-        step_3_title: "Step 3: Calculate Galvanometer Current",
-        step_3_desc: "The current through R5 is the voltage difference divided by R5."
+        step_1_title: "Step 1: System of Kirchhoff's Equations (KCL & KVL)",
+        step_1_desc: "Formulating the 5 equations based on branch currents (I1 to I5).",
+        kcl_nodes: "KCL at Nodes M & N:",
+        kvl_loops: "KVL for 3 Loops:",
+        step_2_title: "Step 2: Substitute Real Values",
+        step_3_title: "Step 3: Solved Branch Currents"
     },
     vi: {
         app_title: "BỘ GIẢI MẠCH CẦU WHEATSTONE",
@@ -65,28 +65,25 @@ const i18n = {
         status_unbalanced: "Cầu Lệch (Không Cân Bằng)",
         show_solution: "Hiển Thị Lời Giải Chi Tiết",
         hide_solution: "Ẩn Lời Giải",
-        step_1_title: "Bước 1: Lập Hệ Phương Trình Nút",
-        step_1_desc: "Áp dụng định luật Kirchhoff 1 (KCL) tại nút M và N.",
-        step_2_title: "Bước 2: Giải Hệ Phương Trình",
-        step_3_title: "Bước 3: Tính Dòng Qua Điện Kế",
-        step_3_desc: "Dòng điện chạy qua nhánh R5 (từ M sang N) bằng độ lệch điện áp chia cho R5."
+        step_1_title: "Bước 1: Hệ phương trình Kirchhoff (KCL & KVL)",
+        step_1_desc: "Lập 5 phương trình dựa trên dòng điện 5 nhánh (I1 đến I5).",
+        kcl_nodes: "Định luật nút (KCL) tại M & N:",
+        kvl_loops: "Định luật vòng (KVL) cho 3 vòng:",
+        step_2_title: "Bước 2: Thay số vào hệ phương trình",
+        step_3_title: "Bước 3: Kết quả Dòng điện các nhánh"
     }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
     initI18n();
     fetchVisitorCount();
-
     setupSyncInputAndSlider('vs', null);
     setupSyncInputAndSlider('r1', 'r1-slider');
     setupSyncInputAndSlider('r2', 'r2-slider');
     setupSyncInputAndSlider('r3', 'r3-slider');
     setupSyncInputAndSlider('r4', 'r4-slider');
     setupSyncInputAndSlider('r5', 'r5-slider');
-
-    const presetBtn = document.getElementById('preset-balanced');
-    presetBtn.addEventListener('click', loadPreset);
-
+    document.getElementById('preset-balanced').addEventListener('click', loadPreset);
     computeWheatstoneBridge();
     initThemeEngine();
     startAnimationLoop();
@@ -118,12 +115,10 @@ function initI18n() {
 
 function applyTranslations() {
     const dict = i18n[currentLang];
-    
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[key]) el.innerHTML = dict[key];
     });
-    
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.getAttribute('data-i18n-placeholder');
         if (dict[key]) el.setAttribute('placeholder', dict[key]);
@@ -133,12 +128,10 @@ function applyTranslations() {
 function setupSyncInputAndSlider(id, sliderId) {
     const input = document.getElementById(id);
     const slider = sliderId ? document.getElementById(sliderId) : null;
-
     input.addEventListener('input', () => {
         if (slider) slider.value = input.value;
         computeWheatstoneBridge();
     });
-
     if (slider) {
         slider.addEventListener('input', () => {
             input.value = slider.value;
@@ -155,13 +148,9 @@ async function fetchVisitorCount() {
             headers: { 'Content-Type': 'application/json' }
         });
         const data = await response.json();
-        if (data.success) {
-            counterSpan.textContent = data.count;
-        } else {
-            counterSpan.textContent = 'Offline';
-        }
+        if (data.success) counterSpan.textContent = data.count;
+        else counterSpan.textContent = 'Offline';
     } catch (err) {
-        console.error("Counter fetch error:", err);
         counterSpan.textContent = 'Error';
     }
 }
@@ -185,40 +174,27 @@ function computeWheatstoneBridge() {
         return;
     }
 
+    // Nodal Analysis Core (vẫn dùng để tính toán tốc độ cao)
     const a11 = (1 / R1) + (1 / R2) + (1 / R5);
     const a12 = -1 / R5;
     const b1 = Vs / R1;
-
     const a21 = -1 / R5;
     const a22 = (1 / R3) + (1 / R4) + (1 / R5);
     const b2 = Vs / R3;
-
     const D = (a11 * a22) - (a12 * a21);
     if (Math.abs(D) < 1e-12) return;
-
     const Vm = ((b1 * a22) - (b2 * a12)) / D;
     const Vn = ((a11 * b2) - (a21 * b1)) / D;
 
-    const U1 = Vs - Vm;
-    const I1 = U1 / R1;
-
-    const U3 = Vs - Vn;
-    const I3 = U3 / R3;
-
-    const U5 = Vm - Vn;
-    const I5 = U5 / R5;
-
-    const U2 = Vm;
-    const I2 = U2 / R2;
-
-    const U4 = Vn;
-    const I4 = U4 / R4;
+    const U1 = Vs - Vm; const I1 = U1 / R1;
+    const U3 = Vs - Vn; const I3 = U3 / R3;
+    const U5 = Vm - Vn; const I5 = U5 / R5;
+    const U2 = Vm;      const I2 = U2 / R2;
+    const U4 = Vn;      const I4 = U4 / R4;
 
     const I_total = I1 + I3;
     const Req = I_total > 0 ? Vs / I_total : 0;
-
     currentStates = { I1, I2, I3, I4, I5, I_total };
-
     const isBalanced = Math.abs(I5 * 1000) < 0.01;
 
     document.getElementById('vc-result').textContent = Vm.toFixed(3) + ' V';
@@ -246,42 +222,32 @@ function computeWheatstoneBridge() {
         <tr><td><strong>R5 (M-N)</strong></td><td>${(I5 * 1000).toFixed(3)} mA</td><td>${Math.abs(U5).toFixed(3)} V</td></tr>
     `;
 
-    // --- BƠM DỮ LIỆU LỜI GIẢI CHI TIẾT (NÂNG CẤP) ---
-    // Nút M
-    document.getElementById('step-eq-m-sub').innerHTML = `(1/${R1} + 1/${R2} + 1/${R5})V<sub>m</sub> - (1/${R5})V<sub>n</sub> = ${Vs}/${R1}`;
-    document.getElementById('step-eq-m').innerHTML = `(${a11.toFixed(4)})*V<sub>m</sub> - (${Math.abs(a12).toFixed(4)})*V<sub>n</sub> = ${b1.toFixed(4)}`;
-    
-    // Nút N
-    document.getElementById('step-eq-n-sub').innerHTML = `-(1/${R5})V<sub>m</sub> + (1/${R3} + 1/${R4} + 1/${R5})V<sub>n</sub> = ${Vs}/${R3}`;
-    document.getElementById('step-eq-n').innerHTML = `-(${Math.abs(a21).toFixed(4)})*V<sub>m</sub> + (${a22.toFixed(4)})*V<sub>n</sub> = ${b2.toFixed(4)}`;
-    
-    // Giải hệ
-    document.getElementById('step-vm').innerHTML = Vm.toFixed(4);
-    document.getElementById('step-vn').innerHTML = Vn.toFixed(4);
+    // --- BƠM DỮ LIỆU KIRCHHOFF VÀO LỜI GIẢI ---
+    document.getElementById('sys-eq1').innerHTML = `I<sub>1</sub> - I<sub>2</sub> - I<sub>5</sub> = 0`;
+    document.getElementById('sys-eq2').innerHTML = `I<sub>3</sub> - I<sub>4</sub> + I<sub>5</sub> = 0`;
+    document.getElementById('sys-eq3').innerHTML = `${R1}*I<sub>1</sub> - ${R3}*I<sub>3</sub> + ${R5}*I<sub>5</sub> = 0`;
+    document.getElementById('sys-eq4').innerHTML = `-${R2}*I<sub>2</sub> + ${R4}*I<sub>4</sub> + ${R5}*I<sub>5</sub> = 0`;
+    document.getElementById('sys-eq5').innerHTML = `${R1}*I<sub>1</sub> + ${R2}*I<sub>2</sub> = ${Vs}`;
 
-    // Tính dòng I5
-    document.getElementById('step-eq-i5-sub').innerHTML = `I<sub>5</sub> = (${Vm.toFixed(4)} - ${Vn.toFixed(4)}) / ${R5}`;
-    document.getElementById('step-i5').innerHTML = `I<sub>5</sub> = ${I5.toFixed(5)} A &nbsp; (${(I5 * 1000).toFixed(2)} mA)`;
+    document.getElementById('step-i1').textContent = I1.toFixed(5);
+    document.getElementById('step-i2').textContent = I2.toFixed(5);
+    document.getElementById('step-i3').textContent = I3.toFixed(5);
+    document.getElementById('step-i4').textContent = I4.toFixed(5);
+    document.getElementById('step-i5').textContent = I5.toFixed(5);
 }
 
 function startAnimationLoop() {
     if (animationTimer) clearInterval(animationTimer);
-    animationTimer = setInterval(() => {
-        triggerCurrentFlowPulse();
-    }, 2500);
+    animationTimer = setInterval(() => { triggerCurrentFlowPulse(); }, 2500);
     triggerCurrentFlowPulse();
 }
 
 function triggerCurrentFlowPulse() {
     const tolerance = 1e-5; 
-
     applyFlow('flow-input', currentStates.I_total > tolerance, true);
     applyFlow('flow-r1', Math.abs(currentStates.I1) > tolerance, currentStates.I1 >= 0);
     applyFlow('flow-r3', Math.abs(currentStates.I3) > tolerance, currentStates.I3 >= 0);
-    
-    const isR5Active = Math.abs(currentStates.I5) > tolerance;
-    applyFlow('flow-r5', isR5Active, currentStates.I5 >= 0);
-
+    applyFlow('flow-r5', Math.abs(currentStates.I5) > tolerance, currentStates.I5 >= 0);
     applyFlow('flow-r2', Math.abs(currentStates.I2) > tolerance, currentStates.I2 >= 0);
     applyFlow('flow-r4', Math.abs(currentStates.I4) > tolerance, currentStates.I4 >= 0);
     applyFlow('flow-output', currentStates.I_total > tolerance, true);
@@ -290,17 +256,9 @@ function triggerCurrentFlowPulse() {
 function applyFlow(elementId, isActive, isForward) {
     const el = document.getElementById(elementId);
     if (!el) return;
-
     el.classList.remove('active-forward', 'active-reverse');
     void el.offsetWidth; 
-
-    if (isActive) {
-        if (isForward) {
-            el.classList.add('active-forward');
-        } else {
-            el.classList.add('active-reverse');
-        }
-    }
+    if (isActive) el.classList.add(isForward ? 'active-forward' : 'active-reverse');
 }
 
 function loadPreset() {
@@ -317,7 +275,6 @@ function initThemeEngine() {
     const htmlEl = document.documentElement;
     const themeToggle = document.getElementById('theme-toggle');
     const accentDots = document.querySelectorAll('.accent-pickers .dot');
-
     const savedTheme = localStorage.getItem('wb_theme') || 'dark';
     const savedAccent = localStorage.getItem('wb_accent') || 'cyan';
 
@@ -326,8 +283,7 @@ function initThemeEngine() {
     themeToggle.textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
     themeToggle.addEventListener('click', () => {
-        const currentTheme = htmlEl.getAttribute('data-theme');
-        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        const newTheme = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         htmlEl.setAttribute('data-theme', newTheme);
         themeToggle.textContent = newTheme === 'dark' ? '🌙' : '☀️';
         localStorage.setItem('wb_theme', newTheme);
