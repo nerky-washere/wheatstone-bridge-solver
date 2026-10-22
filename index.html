@@ -14,10 +14,8 @@
                 <span class="pulse-dot"></span>
                 <h1 data-i18n="app_title">WHEATSTONE BRIDGE SOLVER</h1>
             </div>
-            
             <div class="header-controls">
                 <button class="theme-btn" id="lang-toggle" title="Switch Language" style="font-weight: 700; background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 4px 10px; font-size: 0.9rem;">EN</button>
-                
                 <div class="theme-switcher">
                     <button class="theme-btn" id="theme-toggle" title="Toggle Dark/Light Mode">🌙</button>
                     <div class="accent-pickers">
@@ -27,7 +25,6 @@
                         <span class="dot amber" data-color="amber" title="Amber Gold"></span>
                     </div>
                 </div>
-
                 <div class="visitor-badge" id="visitor-counter">
                     👥 <span data-i18n="unique_visitors">UNIQUE VISITORS:</span> <span class="count-value">Loading...</span>
                 </div>
@@ -40,12 +37,10 @@
                     <h2 data-i18n="circuit_params">Circuit Parameters</h2>
                     <button id="preset-balanced" class="preset-btn" data-i18n="load_preset">Load Balanced Preset</button>
                 </div>
-
                 <div class="input-group main-voltage">
                     <label for="vs" data-i18n="source_voltage">Source Voltage (Vs) [V]</label>
                     <input type="number" id="vs" value="12" step="0.1">
                 </div>
-
                 <div class="resistors-interactive-grid">
                     <div class="interactive-input-group">
                         <div class="label-row">
@@ -83,7 +78,6 @@
                         <input type="range" id="r5-slider" min="1" max="1000" value="220" class="slider">
                     </div>
                 </div>
-
                 <div class="notes-container">
                     <label for="lab-notes" data-i18n="lab_notes_label">📝 Lab Notes & Observations</label>
                     <textarea id="lab-notes" data-i18n-placeholder="lab_notes_placeholder" placeholder="Type your experimental notes or formulas here..."></textarea>
@@ -94,7 +88,6 @@
                 <div class="circuit-viewport">
                     <svg id="bridge-svg" viewBox="0 0 520 280" width="100%" height="100%">
                         <path class="circuit-line" d="M 40 140 H 135 M 205 70 H 230 M 260 70 H 305 M 205 210 H 230 M 260 210 H 305 M 375 140 H 460 M 245 70 V 100 M 245 180 V 210 M 135 70 H 205 M 135 210 H 205 M 305 70 H 375 M 305 210 H 375 M 135 70 V 140 M 135 140 V 210 M 375 70 V 140 M 375 140 V 210" />
-                        
                         <path id="flow-input" class="current-flow" d="M 40 140 H 135" />
                         <path id="flow-r1" class="current-flow" d="M 135 70 H 205" />
                         <path id="flow-r3" class="current-flow" d="M 135 210 H 205" />
@@ -102,19 +95,16 @@
                         <path id="flow-r2" class="current-flow" d="M 305 70 H 375" />
                         <path id="flow-r4" class="current-flow" d="M 305 210 H 375" />
                         <path id="flow-output" class="current-flow" d="M 375 140 H 460" />
-
                         <rect x="135" y="55" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="135" y="195" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="230" y="100" width="30" height="80" rx="4" class="resistor-box" />
                         <rect x="305" y="55" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="305" y="195" width="70" height="30" rx="4" class="resistor-box" />
-
                         <text x="170" y="75" text-anchor="middle" class="svg-label">R1</text>
                         <text x="170" y="215" text-anchor="middle" class="svg-label">R3</text>
                         <text x="245" y="144" text-anchor="middle" class="svg-label">R5</text>
                         <text x="340" y="75" text-anchor="middle" class="svg-label">R2</text>
                         <text x="340" y="215" text-anchor="middle" class="svg-label">R4</text>
-
                         <circle cx="135" cy="140" r="5" class="circuit-node" />
                         <text x="120" y="130" class="node-label">A</text>
                         <circle cx="375" cy="140" r="5" class="circuit-node" />
@@ -123,7 +113,6 @@
                         <text x="245" y="55" text-anchor="middle" class="node-label">M</text>
                         <circle cx="245" cy="210" r="5" class="circuit-node" />
                         <text x="245" y="230" text-anchor="middle" class="node-label">N</text>
-
                         <polygon points="85,135 95,140 85,145" fill="var(--accent)" />
                         <polygon points="415,135 425,140 415,145" fill="var(--accent)" />
                     </svg>
@@ -175,21 +164,39 @@
                         </table>
                     </div>
 
-                    <!-- Nút và Khung hiển thị Lời giải -->
+                    <!-- Nút và Khung hiển thị Lời giải CHI TIẾT -->
                     <button id="toggle-solution-btn" class="solution-toggle-btn" data-i18n="show_solution">Show Step-by-Step Solution</button>
                     
                     <div id="solution-panel" class="step-by-step-panel">
-                        <p><strong data-i18n="eq_node_m">Node M Equation (Nodal Analysis):</strong></p>
-                        <div id="step-eq-m" class="equation-line"></div>
+                        <p><strong data-i18n="step_1_title">Step 1: Nodal Analysis Equations</strong></p>
+                        <p data-i18n="step_1_desc" style="color: var(--text-muted); font-size: 0.8rem;">Apply Kirchhoff's Current Law (KCL) at nodes M and N.</p>
                         
-                        <p><strong data-i18n="eq_node_n">Node N Equation (Nodal Analysis):</strong></p>
-                        <div id="step-eq-n" class="equation-line"></div>
+                        <div class="equation-block">
+                            <div class="theory-eq">(1/R<sub>1</sub> + 1/R<sub>2</sub> + 1/R<sub>5</sub>)V<sub>m</sub> - (1/R<sub>5</sub>)V<sub>n</sub> = V<sub>s</sub>/R<sub>1</sub></div>
+                            <div id="step-eq-m-sub" class="sub-eq"></div>
+                            <div id="step-eq-m" class="equation-line"></div>
+                        </div>
                         
-                        <p><strong data-i18n="solve_system">Solving the system yields:</strong></p>
-                        <div class="equation-line" style="background: transparent;">
-                            D = <span id="step-det"></span><br>
-                            V<sub>m</sub> = <span id="step-vm"></span> V<br>
-                            V<sub>n</sub> = <span id="step-vn"></span> V
+                        <div class="equation-block">
+                            <div class="theory-eq">-(1/R<sub>5</sub>)V<sub>m</sub> + (1/R<sub>3</sub> + 1/R<sub>4</sub> + 1/R<sub>5</sub>)V<sub>n</sub> = V<sub>s</sub>/R<sub>3</sub></div>
+                            <div id="step-eq-n-sub" class="sub-eq"></div>
+                            <div id="step-eq-n" class="equation-line"></div>
+                        </div>
+                        
+                        <p><strong data-i18n="step_2_title">Step 2: Solve the System</strong></p>
+                        <div class="equation-block" style="background: transparent; border: none; padding: 0;">
+                            <div class="equation-line">
+                                V<sub>m</sub> = <span id="step-vm"></span> V<br>
+                                V<sub>n</sub> = <span id="step-vn"></span> V
+                            </div>
+                        </div>
+
+                        <p><strong data-i18n="step_3_title">Step 3: Calculate Galvanometer Current</strong></p>
+                        <p data-i18n="step_3_desc" style="color: var(--text-muted); font-size: 0.8rem;">The current through R5 is the voltage difference divided by R5.</p>
+                        <div class="equation-block">
+                            <div class="theory-eq">I<sub>5</sub> = (V<sub>m</sub> - V<sub>n</sub>) / R<sub>5</sub></div>
+                            <div id="step-eq-i5-sub" class="sub-eq"></div>
+                            <div id="step-i5" class="equation-line"></div>
                         </div>
                     </div>
 
