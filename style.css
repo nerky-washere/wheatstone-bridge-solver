@@ -35,7 +35,6 @@
     padding: 0;
 }
 
-/* Global Monospace Typography Requirement */
 body, input, button, textarea, select, table, th, td {
     font-family: var(--font-mono);
 }
@@ -161,6 +160,7 @@ body {
 
 @media(max-width: 950px) {
     .dashboard-grid { grid-template-columns: 1fr; }
+    .detailed-table-container { max-height: 170px !important; }
 }
 
 .panel {
@@ -199,7 +199,6 @@ body {
     border-color: var(--accent);
 }
 
-/* Requirement 1: Redesigned Source Voltage Input */
 .main-voltage {
     margin-bottom: 16px;
     display: flex;
@@ -228,7 +227,6 @@ body {
     box-shadow: 0 0 10px var(--accent-glow);
 }
 
-/* Requirement 2: Remove Native Number Spinners */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
     -webkit-appearance: none;
@@ -238,7 +236,6 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
-/* Interactive Sliders Grid */
 .resistors-interactive-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -287,7 +284,6 @@ input[type="number"] {
     border-color: var(--accent);
 }
 
-/* Requirement 5: Theme-Aware Sliders */
 .slider {
     -webkit-appearance: none;
     width: 100%;
@@ -319,7 +315,6 @@ input[type="number"] {
     box-shadow: 0 0 6px var(--accent-glow);
 }
 
-/* Notes Section */
 .notes-container {
     display: flex;
     flex-direction: column;
@@ -348,18 +343,20 @@ input[type="number"] {
     box-shadow: 0 0 8px var(--accent-glow);
 }
 
-/* --- VISUAL PANEL & SVG --- */
 .visual-panel {
     display: flex;
     flex-direction: column;
     gap: 20px;
 }
 
+/* Đã tối ưu Responsive cho điện thoại */
 .circuit-viewport {
     background: var(--surface);
     border-radius: 12px;
     border: 1px solid var(--border-color);
-    height: 250px;
+    aspect-ratio: 520 / 280;
+    min-height: 170px;
+    max-height: 300px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -381,7 +378,6 @@ input[type="number"] {
     opacity: 0;
 }
 
-/* Pulsed Current Flow Animation (Requirement 7) */
 .current-flow.active-forward {
     opacity: 1;
     animation: dashFlowForward 1.2s linear 1 forwards;
@@ -426,7 +422,6 @@ input[type="number"] {
     font-weight: 700;
 }
 
-/* --- REQUIREMENT 4: GLOWING RESULT CARDS --- */
 .results-card {
     background: var(--surface);
     border-radius: 12px;
@@ -503,9 +498,12 @@ input[type="number"] {
     box-shadow: 0 0 15px var(--accent-glow);
 }
 
+/* Đã tối ưu cuộn ngang cho điện thoại */
 .detailed-table-container {
     max-height: 140px;
     overflow-y: auto;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     background: var(--bg-secondary);
@@ -513,6 +511,7 @@ input[type="number"] {
 
 .detailed-table {
     width: 100%;
+    min-width: 360px;
     border-collapse: collapse;
     font-size: 0.8rem;
     text-align: left;
@@ -533,10 +532,11 @@ input[type="number"] {
 .detailed-table td {
     color: var(--text-main);
 }
-/* --- REQUIREMENT 8: STEP-BY-STEP SOLUTION PANEL --- */
+
+/* --- TÍNH NĂNG GIÁO DỤC: BẢNG LỜI GIẢI CHI TIẾT --- */
 .solution-toggle-btn {
     width: 100%;
-    margin-top: 16px;
+    margin-top: 10px;
     padding: 10px;
     background: var(--surface);
     border: 1px dashed var(--border-color);
@@ -552,7 +552,7 @@ input[type="number"] {
     box-shadow: 0 0 10px var(--accent-glow);
 }
 .step-by-step-panel {
-    display: none; /* Ẩn mặc định */
+    display: none;
     margin-top: 12px;
     padding: 16px;
     background: var(--bg-primary);
@@ -568,7 +568,7 @@ input[type="number"] {
     color: var(--accent);
     font-weight: bold;
     background: rgba(0, 0, 0, 0.2);
-    padding: 4px 8px;
+    padding: 6px 10px;
     border-radius: 4px;
     margin: 4px 0 12px 0;
 }
