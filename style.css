@@ -39,6 +39,31 @@ body { background-color: var(--bg-primary); color: var(--text-main); min-height:
 @keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 15px var(--success); } 100% { transform: scale(0.95); opacity: 0.8; } }
 .logo-area h1 { font-size: 1.15rem; font-weight: 600; letter-spacing: 0.5px; }
 .header-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+/* --- NÚT CHUYỂN NGÔN NGỮ NỔI BẬT DỄ NHÌN --- */
+.lang-switch-btn {
+    background: var(--accent-glow);
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 0 12px var(--accent-glow);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.lang-switch-btn:hover {
+    background: var(--accent);
+    color: #090A0F;
+    box-shadow: 0 0 18px var(--accent);
+    transform: translateY(-1px);
+}
+
 .theme-switcher { display: flex; align-items: center; gap: 10px; background: var(--surface); padding: 6px 12px; border-radius: 30px; border: 1px solid var(--border-color); }
 .theme-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text-main); }
 .accent-pickers { display: flex; gap: 6px; }
@@ -55,13 +80,37 @@ body { background-color: var(--bg-primary); color: var(--text-main); min-height:
 .preset-btn { background: var(--surface); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
 .preset-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-/* Dòng nhập Điện áp nguồn & Giới hạn công suất */
+/* --- Ô NHẬP ĐIỆN ÁP NGUỒN & Ô CHỌN P_MAX ĐỒNG BỘ MÀU TỐI --- */
 .top-params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-@media(max-width: 500px) { .top-params-grid { grid-template-columns: 1fr; } }
+@media(max-width: 550px) { .top-params-grid { grid-template-columns: 1fr; } }
 .main-voltage { display: flex; flex-direction: column; gap: 6px; }
 .main-voltage label { font-size: 0.78rem; color: var(--text-muted); }
-.main-voltage input, .main-voltage select { background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 12px; color: var(--text-main); font-size: 0.95rem; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-.main-voltage input:focus, .main-voltage select:focus { border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
+.main-voltage input,
+.main-voltage select,
+select.styled-select {
+    width: 100%;
+    background-color: var(--surface) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.92rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.main-voltage select option,
+select.styled-select option {
+    background-color: var(--bg-secondary);
+    color: var(--text-main);
+    padding: 8px;
+}
+.main-voltage input:focus,
+.main-voltage select:focus,
+select.styled-select:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
 
 input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; } input[type="number"] { -moz-appearance: textfield; }
 .resistors-interactive-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
@@ -84,7 +133,6 @@ input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-o
 .circuit-viewport { background: var(--surface); border-radius: 12px; border: 1px solid var(--border-color); aspect-ratio: 520 / 280; min-height: 180px; max-height: 310px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; position: relative; }
 .circuit-line { stroke: var(--text-muted); stroke-width: 3.5; fill: none; transition: stroke 0.35s ease; stroke-linecap: round; stroke-linejoin: round; }
 
-/* Hạt electron / dòng điện chạy liên tục */
 .current-flow {
     stroke: #FFFFFF;
     stroke-width: 4;
@@ -116,7 +164,6 @@ input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-o
     to   { stroke-dashoffset: 0; }
 }
 
-/* Hộp điện trở & hiệu ứng Quá tải / Cháy nổ */
 .resistor-box { fill: var(--bg-secondary); stroke: var(--border-color); stroke-width: 2; transition: fill 0.3s, stroke 0.3s, filter 0.3s; }
 .resistor-box.overloaded {
     fill: rgba(239, 68, 68, 0.35) !important;
@@ -148,15 +195,15 @@ input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-o
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background: var(--bg-secondary);
+    background: var(--surface);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px 14px;
-    font-size: 0.75rem;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.78rem;
     color: var(--text-muted);
     flex-wrap: wrap;
 }
-.legend-bar-wrap { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 180px; }
+.legend-bar-wrap { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 180px; font-weight: 600; color: var(--text-main); }
 .legend-gradient {
     flex: 1;
     height: 8px;
