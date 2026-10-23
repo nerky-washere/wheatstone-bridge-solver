@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wheatstone Bridge Engine | Advanced Solver</title>
+    <title>Wheatstone Bridge Engine | Interactive Physics Lab</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -31,8 +31,9 @@
         </header>
 
         <main class="dashboard-grid">
+            <!-- BẢNG ĐIỀU KHIỂN BÊN TRÁI -->
             <section class="panel control-panel">
-                <div class="panel-header" style="flex-wrap: wrap; gap: 8px;">
+                <div class="panel-header">
                     <h2 data-i18n="circuit_params">Circuit Parameters</h2>
                     <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                         <button id="preset-balanced" class="preset-btn" data-i18n="load_preset">Load Balanced</button>
@@ -40,10 +41,24 @@
                         <button id="start-quiz-btn" class="preset-btn quiz-btn" data-i18n="quiz_btn">🎯 Practice Quiz</button>
                     </div>
                 </div>
-                <div class="input-group main-voltage">
-                    <label for="vs" data-i18n="source_voltage">Source Voltage (Vs) [V]</label>
-                    <input type="number" id="vs" value="12" step="0.1">
+
+                <div class="top-params-grid">
+                    <div class="input-group main-voltage">
+                        <label for="vs" data-i18n="source_voltage">Source Voltage (Vs) [V]</label>
+                        <input type="number" id="vs" value="12" step="0.5">
+                    </div>
+                    <div class="input-group main-voltage">
+                        <label for="pmax" data-i18n="pmax_label">Max Power Rating (P<sub>max</sub>)</label>
+                        <select id="pmax">
+                            <option value="0.25">0.25 W (1/4 W Lab)</option>
+                            <option value="0.5" selected>0.50 W (1/2 W Standard)</option>
+                            <option value="1">1.00 W (High Power)</option>
+                            <option value="2">2.00 W (Industrial)</option>
+                            <option value="9999">∞ Unlimited (Ideal)</option>
+                        </select>
+                    </div>
                 </div>
+
                 <div class="resistors-interactive-grid">
                     <div class="interactive-input-group">
                         <div class="label-row"><label for="r1" data-i18n="r1_label">R1 [Ω]</label><input type="number" id="r1" value="100" step="1"></div>
@@ -72,38 +87,76 @@
                 </div>
             </section>
 
+            <!-- BẢNG MÔ PHỎNG & KẾT QUẢ BÊN PHẢI -->
             <section class="panel visual-panel">
                 <div class="circuit-viewport">
                     <svg id="bridge-svg" viewBox="0 0 520 280" width="100%" height="100%">
-                        <path class="circuit-line" d="M 40 140 H 135 M 205 70 H 230 M 260 70 H 305 M 205 210 H 230 M 260 210 H 305 M 375 140 H 460 M 245 70 V 100 M 245 180 V 210 M 135 70 H 205 M 135 210 H 205 M 305 70 H 375 M 305 210 H 375 M 135 70 V 140 M 135 140 V 210 M 375 70 V 140 M 375 140 V 210" />
+                        <!-- 4 Vùng dây dẫn Đẳng thế (Bản đồ nhiệt Điện thế) -->
+                        <path id="wire-node-a" class="circuit-line" d="M 40 140 H 135 M 135 70 V 210" />
+                        <path id="wire-node-m" class="circuit-line" d="M 205 70 H 305 M 245 70 V 100" />
+                        <path id="wire-node-n" class="circuit-line" d="M 205 210 H 305 M 245 180 V 210" />
+                        <path id="wire-node-b" class="circuit-line" d="M 375 70 V 210 M 375 140 H 460" />
+
+                        <!-- Hạt dòng điện chạy trên từng nhánh -->
                         <path id="flow-input" class="current-flow" d="M 40 140 H 135" />
-                        <path id="flow-r1" class="current-flow" d="M 135 70 H 205" />
-                        <path id="flow-r3" class="current-flow" d="M 135 210 H 205" />
-                        <path id="flow-r5" class="current-flow" d="M 245 100 V 180" />
-                        <path id="flow-r2" class="current-flow" d="M 305 70 H 375" />
-                        <path id="flow-r4" class="current-flow" d="M 305 210 H 375" />
+                        <path id="flow-r1" class="current-flow" d="M 135 140 V 70 H 245" />
+                        <path id="flow-r3" class="current-flow" d="M 135 140 V 210 H 245" />
+                        <path id="flow-r5" class="current-flow" d="M 245 70 V 210" />
+                        <path id="flow-r2" class="current-flow" d="M 245 70 H 375 V 140" />
+                        <path id="flow-r4" class="current-flow" d="M 245 210 H 375 V 140" />
                         <path id="flow-output" class="current-flow" d="M 375 140 H 460" />
-                        <rect x="135" y="55" width="70" height="30" rx="4" class="resistor-box" />
-                        <rect x="135" y="195" width="70" height="30" rx="4" class="resistor-box" />
-                        <rect x="230" y="100" width="30" height="80" rx="4" class="resistor-box" />
-                        <rect x="305" y="55" width="70" height="30" rx="4" class="resistor-box" />
-                        <rect x="305" y="195" width="70" height="30" rx="4" class="resistor-box" />
+
+                        <!-- 5 Điện trở -->
+                        <rect id="box-r1" x="135" y="55" width="70" height="30" rx="4" class="resistor-box" />
+                        <rect id="box-r3" x="135" y="195" width="70" height="30" rx="4" class="resistor-box" />
+                        <rect id="box-r5" x="230" y="100" width="30" height="80" rx="4" class="resistor-box" />
+                        <rect id="box-r2" x="305" y="55" width="70" height="30" rx="4" class="resistor-box" />
+                        <rect id="box-r4" x="305" y="195" width="70" height="30" rx="4" class="resistor-box" />
+
+                        <!-- Nhãn tên Điện trở -->
                         <text x="170" y="75" text-anchor="middle" class="svg-label">R1</text>
                         <text x="170" y="215" text-anchor="middle" class="svg-label">R3</text>
                         <text x="245" y="144" text-anchor="middle" class="svg-label">R5</text>
                         <text x="340" y="75" text-anchor="middle" class="svg-label">R2</text>
                         <text x="340" y="215" text-anchor="middle" class="svg-label">R4</text>
-                        <circle cx="135" cy="140" r="5" class="circuit-node" />
-                        <text x="120" y="130" class="node-label">A</text>
-                        <circle cx="375" cy="140" r="5" class="circuit-node" />
-                        <text x="385" y="130" class="node-label">B</text>
-                        <circle cx="245" cy="70" r="5" class="circuit-node" />
-                        <text x="245" y="55" text-anchor="middle" class="node-label">M</text>
-                        <circle cx="245" cy="210" r="5" class="circuit-node" />
-                        <text x="245" y="230" text-anchor="middle" class="node-label">N</text>
-                        <polygon points="85,135 95,140 85,145" fill="var(--accent)" />
-                        <polygon points="415,135 425,140 415,145" fill="var(--accent)" />
+
+                        <!-- Biểu tượng Cháy / Quá nhiệt khi vượt công suất P_max -->
+                        <text id="fire-r1" x="170" y="50" text-anchor="middle" class="fire-icon">🔥</text>
+                        <text id="fire-r2" x="340" y="50" text-anchor="middle" class="fire-icon">🔥</text>
+                        <text id="fire-r3" x="170" y="245" text-anchor="middle" class="fire-icon">🔥</text>
+                        <text id="fire-r4" x="340" y="245" text-anchor="middle" class="fire-icon">🔥</text>
+                        <text id="fire-r5" x="275" y="145" text-anchor="middle" class="fire-icon">🔥</text>
+
+                        <!-- 4 Nút A, B, M, N -->
+                        <circle id="node-dot-a" cx="135" cy="140" r="6" class="circuit-node" />
+                        <text x="118" y="130" class="node-label">A (+)</text>
+
+                        <circle id="node-dot-b" cx="375" cy="140" r="6" class="circuit-node" />
+                        <text x="385" y="130" class="node-label">B (-)</text>
+
+                        <circle id="node-dot-m" cx="245" cy="70" r="6" class="circuit-node" />
+                        <text x="245" y="52" text-anchor="middle" class="node-label">M</text>
+
+                        <circle id="node-dot-n" cx="245" cy="210" r="6" class="circuit-node" />
+                        <text x="245" y="234" text-anchor="middle" class="node-label">N</text>
                     </svg>
+                </div>
+
+                <!-- Chú giải Bản đồ nhiệt Điện thế -->
+                <div class="voltage-legend">
+                    <span data-i18n="heatmap_label">🌡️ Voltage Heatmap:</span>
+                    <div class="legend-bar-wrap">
+                        <span>0V (B)</span>
+                        <div class="legend-gradient"></div>
+                        <span id="legend-vs-max">12V (A)</span>
+                    </div>
+                    <span data-i18n="particle_hint" style="font-size: 0.72rem;">⚡ Dot speed ∝ Current (I)</span>
+                </div>
+
+                <!-- Cảnh báo Quá tải Công suất (Cháy điện trở) -->
+                <div id="burnout-banner" class="burnout-banner">
+                    <span>🔥</span>
+                    <span id="burnout-text">OVERLOAD WARNING!</span>
                 </div>
 
                 <!-- KHUNG LUYỆN TẬP (QUIZ PANEL) -->
@@ -112,7 +165,7 @@
                         <h3 data-i18n="quiz_title">🎯 Practice Challenge</h3>
                         <button id="exit-quiz-btn" class="quiz-action-btn" data-i18n="quiz_exit" style="padding: 4px 10px; font-size: 0.75rem;">Exit Quiz</button>
                     </div>
-                    <p class="quiz-desc" data-i18n="quiz_desc">Results are hidden! Calculate the circuit parameters using the random values on the left and enter your answers below (±2% tolerance):</p>
+                    <p class="quiz-desc" data-i18n="quiz_desc">Results & heatmap are hidden! Calculate the circuit parameters using the random values on the left and enter your answers below (±2% tolerance):</p>
                     
                     <div class="quiz-inputs-grid">
                         <div class="quiz-input-box">
@@ -159,6 +212,7 @@
                                     <th data-i18n="branch_th">Branch</th>
                                     <th data-i18n="current_th">Current (I)</th>
                                     <th data-i18n="voltage_th">Voltage (U)</th>
+                                    <th data-i18n="power_th">Power (P)</th>
                                 </tr>
                             </thead>
                             <tbody id="detailed-tbody"></tbody>
@@ -206,14 +260,12 @@
         <div class="modal-content">
             <button id="close-theory-btn" class="close-modal-btn">X</button>
             <h3 data-i18n="modal_title">Bí Kíp Giải Mạch Cầu (Vật Lý 11)</h3>
-            
             <h4 data-i18n="modal_h1">1. Nhận dạng mạch cầu và phân loại</h4>
             <p data-i18n="modal_p1">Mạch cầu gồm 2 nút chính (M và N) mà điện trở R5 được mắc giữa 2 nút đó.</p>
             <ul>
                 <li data-i18n="modal_l1"><strong>Mạch cầu cân bằng:</strong> Khi R1.R4 = R2.R3</li>
                 <li data-i18n="modal_l2"><strong>Mạch cầu không cân bằng:</strong> Khi R1.R4 ≠ R2.R3</li>
             </ul>
-
             <h4 data-i18n="modal_h2">2. Phương pháp giải mạch cầu cân bằng</h4>
             <p data-i18n="modal_p2">Khi mạch cân bằng, hiệu điện thế U5 = 0 và cường độ dòng điện I5 = 0.</p>
             <ul>
@@ -223,7 +275,6 @@
                 <li data-i18n="modal_l6"><strong>Bước 4:</strong> Tính Rtđ = (R13 * R24) / (R13 + R24).</li>
                 <li data-i18n="modal_l7"><strong>Bước 5:</strong> Áp dụng định luật Ôm để tìm I, U.</li>
             </ul>
-
             <h4 data-i18n="modal_h3">3. Phương pháp giải mạch cầu không cân bằng (Khuyên dùng)</h4>
             <p data-i18n="modal_p3">Sử dụng định luật Kiếc-sôp (Kirchhoff 1 & 2):</p>
             <ul>
