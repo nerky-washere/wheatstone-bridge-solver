@@ -1,290 +1,301 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark" data-accent="cyan">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wheatstone Bridge Engine | Interactive Physics Lab</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div class="app-container">
-        <header class="app-header">
-            <div class="logo-area">
-                <span class="pulse-dot"></span>
-                <h1 data-i18n="app_title">WHEATSTONE BRIDGE SOLVER</h1>
-            </div>
-            <div class="header-controls">
-                <button class="theme-btn" id="lang-toggle" title="Switch Language" style="font-weight: 700; background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 4px 10px; font-size: 0.9rem;">EN</button>
-                <div class="theme-switcher">
-                    <button class="theme-btn" id="theme-toggle" title="Toggle Dark/Light Mode">🌙</button>
-                    <div class="accent-pickers">
-                        <span class="dot cyan" data-color="cyan" title="Electric Cyan"></span>
-                        <span class="dot emerald" data-color="emerald" title="Emerald Green"></span>
-                        <span class="dot purple" data-color="purple" title="Cyber Purple"></span>
-                        <span class="dot amber" data-color="amber" title="Amber Gold"></span>
-                    </div>
-                </div>
-                <div class="visitor-badge" id="visitor-counter">
-                    👥 <span data-i18n="unique_visitors">UNIQUE VISITORS:</span> <span class="count-value">Loading...</span>
-                </div>
-            </div>
-        </header>
+:root {
+    --bg-primary: #090A0F;
+    --bg-secondary: #13161F;
+    --surface: #1E2330;
+    --surface-hover: #262D40;
+    --text-main: #F3F4F6;
+    --text-muted: #9CA3AF;
+    --border-color: rgba(255, 255, 255, 0.08);
+    --accent: #00F2FE;
+    --accent-glow: rgba(0, 242, 254, 0.25);
+    --danger: #EF4444;
+    --success: #10B981;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
 
-        <main class="dashboard-grid">
-            <!-- BẢNG ĐIỀU KHIỂN BÊN TRÁI -->
-            <section class="panel control-panel">
-                <div class="panel-header">
-                    <h2 data-i18n="circuit_params">Circuit Parameters</h2>
-                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
-                        <button id="preset-balanced" class="preset-btn" data-i18n="load_preset">Load Balanced</button>
-                        <button id="open-theory-btn" class="preset-btn theory-btn" data-i18n="theory_btn">📖 Cheat Sheet</button>
-                        <button id="start-quiz-btn" class="preset-btn quiz-btn" data-i18n="quiz_btn">🎯 Practice Quiz</button>
-                    </div>
-                </div>
+[data-theme="light"] {
+    --bg-primary: #F1F5F9;
+    --bg-secondary: #FFFFFF;
+    --surface: #E2E8F0;
+    --surface-hover: #CBD5E1;
+    --text-main: #0F172A;
+    --text-muted: #64748B;
+    --border-color: rgba(0, 0, 0, 0.08);
+    --accent: #0284C7;
+    --accent-glow: rgba(2, 132, 199, 0.2);
+}
 
-                <div class="top-params-grid">
-                    <div class="input-group main-voltage">
-                        <label for="vs" data-i18n="source_voltage">Source Voltage (Vs) [V]</label>
-                        <input type="number" id="vs" value="12" step="0.5">
-                    </div>
-                    <div class="input-group main-voltage">
-                        <label for="pmax" data-i18n="pmax_label">Max Power Rating (P<sub>max</sub>)</label>
-                        <select id="pmax">
-                            <option value="0.25">0.25 W (1/4 W Lab)</option>
-                            <option value="0.5" selected>0.50 W (1/2 W Standard)</option>
-                            <option value="1">1.00 W (High Power)</option>
-                            <option value="2">2.00 W (Industrial)</option>
-                            <option value="9999">∞ Unlimited (Ideal)</option>
-                        </select>
-                    </div>
-                </div>
+[data-accent="emerald"] { --accent: #10B981; --accent-glow: rgba(16, 185, 129, 0.25); }
+[data-accent="purple"]  { --accent: #8B5CF6; --accent-glow: rgba(139, 92, 246, 0.25); }
+[data-accent="amber"]   { --accent: #F59E0B; --accent-glow: rgba(245, 158, 11, 0.25); }
 
-                <div class="resistors-interactive-grid">
-                    <div class="interactive-input-group">
-                        <div class="label-row"><label for="r1" data-i18n="r1_label">R1 [Ω]</label><input type="number" id="r1" value="100" step="1"></div>
-                        <input type="range" id="r1-slider" min="1" max="1000" value="100" class="slider">
-                    </div>
-                    <div class="interactive-input-group">
-                        <div class="label-row"><label for="r2" data-i18n="r2_label">R2 [Ω]</label><input type="number" id="r2" value="100" step="1"></div>
-                        <input type="range" id="r2-slider" min="1" max="1000" value="100" class="slider">
-                    </div>
-                    <div class="interactive-input-group">
-                        <div class="label-row"><label for="r3" data-i18n="r3_label">R3 [Ω]</label><input type="number" id="r3" value="150" step="1"></div>
-                        <input type="range" id="r3-slider" min="1" max="1000" value="150" class="slider">
-                    </div>
-                    <div class="interactive-input-group">
-                        <div class="label-row"><label for="r4" data-i18n="r4_label">R4 [Ω]</label><input type="number" id="r4" value="150" step="1"></div>
-                        <input type="range" id="r4-slider" min="1" max="1000" value="150" class="slider">
-                    </div>
-                    <div class="interactive-input-group full-width">
-                        <div class="label-row"><label for="r5" data-i18n="r5_label">R5 (Galvanometer) [Ω]</label><input type="number" id="r5" value="220" step="1"></div>
-                        <input type="range" id="r5-slider" min="1" max="1000" value="220" class="slider">
-                    </div>
-                </div>
-                <div class="notes-container">
-                    <label for="lab-notes" data-i18n="lab_notes_label">📝 Lab Notes</label>
-                    <textarea id="lab-notes" data-i18n-placeholder="lab_notes_placeholder" placeholder="Type formulas..."></textarea>
-                </div>
-            </section>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body, input, button, textarea, select, table, th, td { font-family: var(--font-mono); }
+body { background-color: var(--bg-primary); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; transition: background-color 0.3s ease, color 0.3s ease; }
+.app-container { width: 100%; max-width: 1250px; display: flex; flex-direction: column; gap: 20px; }
+.app-header { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.2); flex-wrap: wrap; gap: 12px; }
+.logo-area { display: flex; align-items: center; gap: 12px; }
+.pulse-dot { width: 10px; height: 10px; background-color: var(--success); border-radius: 50%; box-shadow: 0 0 10px var(--success); animation: pulse 2s infinite; }
+@keyframes pulse { 0% { transform: scale(0.95); opacity: 0.8; } 50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 15px var(--success); } 100% { transform: scale(0.95); opacity: 0.8; } }
+.logo-area h1 { font-size: 1.15rem; font-weight: 600; letter-spacing: 0.5px; }
+.header-controls { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 
-            <!-- BẢNG MÔ PHỎNG & KẾT QUẢ BÊN PHẢI -->
-            <section class="panel visual-panel">
-                <div class="circuit-viewport">
-                    <svg id="bridge-svg" viewBox="0 0 520 280" width="100%" height="100%">
-                        <!-- 4 Vùng dây dẫn Đẳng thế (Bản đồ nhiệt Điện thế) -->
-                        <path id="wire-node-a" class="circuit-line" d="M 40 140 H 135 M 135 70 V 210" />
-                        <path id="wire-node-m" class="circuit-line" d="M 205 70 H 305 M 245 70 V 100" />
-                        <path id="wire-node-n" class="circuit-line" d="M 205 210 H 305 M 245 180 V 210" />
-                        <path id="wire-node-b" class="circuit-line" d="M 375 70 V 210 M 375 140 H 460" />
+/* --- NÚT CHUYỂN NGÔN NGỮ NỔI BẬT DỄ NHÌN --- */
+.lang-switch-btn {
+    background: var(--accent-glow);
+    color: var(--accent);
+    border: 1.5px solid var(--accent);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    box-shadow: 0 0 12px var(--accent-glow);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.lang-switch-btn:hover {
+    background: var(--accent);
+    color: #090A0F;
+    box-shadow: 0 0 18px var(--accent);
+    transform: translateY(-1px);
+}
 
-                        <!-- Hạt dòng điện chạy trên từng nhánh -->
-                        <path id="flow-input" class="current-flow" d="M 40 140 H 135" />
-                        <path id="flow-r1" class="current-flow" d="M 135 140 V 70 H 245" />
-                        <path id="flow-r3" class="current-flow" d="M 135 140 V 210 H 245" />
-                        <path id="flow-r5" class="current-flow" d="M 245 70 V 210" />
-                        <path id="flow-r2" class="current-flow" d="M 245 70 H 375 V 140" />
-                        <path id="flow-r4" class="current-flow" d="M 245 210 H 375 V 140" />
-                        <path id="flow-output" class="current-flow" d="M 375 140 H 460" />
+.theme-switcher { display: flex; align-items: center; gap: 10px; background: var(--surface); padding: 6px 12px; border-radius: 30px; border: 1px solid var(--border-color); }
+.theme-btn { background: none; border: none; cursor: pointer; font-size: 1rem; color: var(--text-main); }
+.accent-pickers { display: flex; gap: 6px; }
+.accent-pickers .dot { width: 14px; height: 14px; border-radius: 50%; cursor: pointer; transition: transform 0.2s; }
+.dot:hover { transform: scale(1.2); }
+.dot.cyan { background-color: #00F2FE; } .dot.emerald { background-color: #10B981; } .dot.purple { background-color: #8B5CF6; } .dot.amber { background-color: #F59E0B; }
+.visitor-badge { background: var(--surface); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 30px; font-size: 0.85rem; color: var(--text-muted); }
+.visitor-badge .count-value { color: var(--accent); font-weight: 600; }
+.dashboard-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 20px; }
+@media(max-width: 950px) { .dashboard-grid { grid-template-columns: 1fr; } .detailed-table-container { max-height: 190px !important; } }
+.panel { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 16px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+.panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+.panel h2 { font-size: 1.1rem; font-weight: 600; }
+.preset-btn { background: var(--surface); border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.75rem; padding: 6px 10px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+.preset-btn:hover { color: var(--accent); border-color: var(--accent); }
 
-                        <!-- 5 Điện trở -->
-                        <rect id="box-r1" x="135" y="55" width="70" height="30" rx="4" class="resistor-box" />
-                        <rect id="box-r3" x="135" y="195" width="70" height="30" rx="4" class="resistor-box" />
-                        <rect id="box-r5" x="230" y="100" width="30" height="80" rx="4" class="resistor-box" />
-                        <rect id="box-r2" x="305" y="55" width="70" height="30" rx="4" class="resistor-box" />
-                        <rect id="box-r4" x="305" y="195" width="70" height="30" rx="4" class="resistor-box" />
+/* --- Ô NHẬP ĐIỆN ÁP NGUỒN & Ô CHỌN P_MAX ĐỒNG BỘ MÀU TỐI --- */
+.top-params-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+@media(max-width: 550px) { .top-params-grid { grid-template-columns: 1fr; } }
+.main-voltage { display: flex; flex-direction: column; gap: 6px; }
+.main-voltage label { font-size: 0.78rem; color: var(--text-muted); }
+.main-voltage input,
+.main-voltage select,
+select.styled-select {
+    width: 100%;
+    background-color: var(--surface) !important;
+    color: var(--text-main) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.92rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.main-voltage select option,
+select.styled-select option {
+    background-color: var(--bg-secondary);
+    color: var(--text-main);
+    padding: 8px;
+}
+.main-voltage input:focus,
+.main-voltage select:focus,
+select.styled-select:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 10px var(--accent-glow);
+}
 
-                        <!-- Nhãn tên Điện trở -->
-                        <text x="170" y="75" text-anchor="middle" class="svg-label">R1</text>
-                        <text x="170" y="215" text-anchor="middle" class="svg-label">R3</text>
-                        <text x="245" y="144" text-anchor="middle" class="svg-label">R5</text>
-                        <text x="340" y="75" text-anchor="middle" class="svg-label">R2</text>
-                        <text x="340" y="215" text-anchor="middle" class="svg-label">R4</text>
+input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; } input[type="number"] { -moz-appearance: textfield; }
+.resistors-interactive-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.interactive-input-group { background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+.interactive-input-group.full-width { grid-column: span 2; }
+.label-row { display: flex; justify-content: space-between; align-items: center; }
+.label-row label { font-size: 0.75rem; color: var(--text-muted); }
+.label-row input[type="number"] { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 8px; color: var(--text-main); font-size: 0.9rem; width: 80px; text-align: right; outline: none; }
+.label-row input[type="number"]:focus { border-color: var(--accent); }
+.slider { -webkit-appearance: none; width: 100%; height: 4px; border-radius: 2px; background: var(--border-color); outline: none; transition: opacity 0.2s; }
+.slider::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; box-shadow: 0 0 6px var(--accent-glow); }
+.slider::-moz-range-thumb { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); cursor: pointer; border: none; box-shadow: 0 0 6px var(--accent-glow); }
+.notes-container { display: flex; flex-direction: column; gap: 6px; }
+.notes-container label { font-size: 0.75rem; color: var(--text-muted); }
+.notes-container textarea { background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; color: var(--text-main); font-size: 0.85rem; resize: vertical; min-height: 70px; outline: none; }
+.notes-container textarea:focus { border-color: var(--accent); box-shadow: 0 0 8px var(--accent-glow); }
+.visual-panel { display: flex; flex-direction: column; gap: 16px; }
 
-                        <!-- Biểu tượng Cháy / Quá nhiệt khi vượt công suất P_max -->
-                        <text id="fire-r1" x="170" y="50" text-anchor="middle" class="fire-icon">🔥</text>
-                        <text id="fire-r2" x="340" y="50" text-anchor="middle" class="fire-icon">🔥</text>
-                        <text id="fire-r3" x="170" y="245" text-anchor="middle" class="fire-icon">🔥</text>
-                        <text id="fire-r4" x="340" y="245" text-anchor="middle" class="fire-icon">🔥</text>
-                        <text id="fire-r5" x="275" y="145" text-anchor="middle" class="fire-icon">🔥</text>
+/* --- SƠ ĐỒ MẠCH, BẢN ĐỒ NHIỆT ĐIỆN THẾ & HẠT DÒNG ĐIỆN --- */
+.circuit-viewport { background: var(--surface); border-radius: 12px; border: 1px solid var(--border-color); aspect-ratio: 520 / 280; min-height: 180px; max-height: 310px; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; position: relative; }
+.circuit-line { stroke: var(--text-muted); stroke-width: 3.5; fill: none; transition: stroke 0.35s ease; stroke-linecap: round; stroke-linejoin: round; }
 
-                        <!-- 4 Nút A, B, M, N -->
-                        <circle id="node-dot-a" cx="135" cy="140" r="6" class="circuit-node" />
-                        <text x="118" y="130" class="node-label">A (+)</text>
+.current-flow {
+    stroke: #FFFFFF;
+    stroke-width: 4;
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 1 18;
+    opacity: 0;
+    filter: drop-shadow(0 0 4px var(--accent));
+    transition: opacity 0.2s ease, stroke-width 0.2s ease;
+}
+[data-theme="light"] .current-flow {
+    stroke: #0F172A;
+    filter: drop-shadow(0 0 3px var(--accent));
+}
+.current-flow.flowing-forward {
+    opacity: 0.95;
+    animation: particleFlowForward 1s linear infinite;
+}
+.current-flow.flowing-reverse {
+    opacity: 0.95;
+    animation: particleFlowReverse 1s linear infinite;
+}
+@keyframes particleFlowForward {
+    from { stroke-dashoffset: 19; }
+    to   { stroke-dashoffset: 0; }
+}
+@keyframes particleFlowReverse {
+    from { stroke-dashoffset: -19; }
+    to   { stroke-dashoffset: 0; }
+}
 
-                        <circle id="node-dot-b" cx="375" cy="140" r="6" class="circuit-node" />
-                        <text x="385" y="130" class="node-label">B (-)</text>
+.resistor-box { fill: var(--bg-secondary); stroke: var(--border-color); stroke-width: 2; transition: fill 0.3s, stroke 0.3s, filter 0.3s; }
+.resistor-box.overloaded {
+    fill: rgba(239, 68, 68, 0.35) !important;
+    stroke: #EF4444 !important;
+    stroke-width: 2.5px !important;
+    filter: drop-shadow(0 0 10px #EF4444);
+    animation: overheatShake 0.25s infinite;
+}
+@keyframes overheatShake {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(-1px, 1px); }
+    50% { transform: translate(1px, -1px); }
+    75% { transform: translate(-1px, -1px); }
+}
+.fire-icon { font-size: 15px; display: none; pointer-events: none; user-select: none; }
+.fire-icon.visible { display: block; animation: flamePulse 0.6s infinite alternate; }
+@keyframes flamePulse {
+    from { transform: translateY(0) scale(1); }
+    to   { transform: translateY(-3px) scale(1.18); }
+}
 
-                        <circle id="node-dot-m" cx="245" cy="70" r="6" class="circuit-node" />
-                        <text x="245" y="52" text-anchor="middle" class="node-label">M</text>
+.circuit-node { fill: var(--accent); transition: fill 0.35s ease; stroke: var(--bg-secondary); stroke-width: 1.5; }
+.svg-label { fill: var(--text-main); font-size: 11px; font-weight: 600; pointer-events: none; }
+.node-label { fill: var(--accent); font-size: 12px; font-weight: 700; }
 
-                        <circle id="node-dot-n" cx="245" cy="210" r="6" class="circuit-node" />
-                        <text x="245" y="234" text-anchor="middle" class="node-label">N</text>
-                    </svg>
-                </div>
+/* Thanh chú thích Bản đồ nhiệt Điện thế */
+.voltage-legend {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    flex-wrap: wrap;
+}
+.legend-bar-wrap { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 180px; font-weight: 600; color: var(--text-main); }
+.legend-gradient {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, #3B82F6 0%, #10B981 50%, #F59E0B 75%, #EF4444 100%);
+}
+.burnout-banner {
+    display: none;
+    background: rgba(239, 68, 68, 0.16);
+    border: 1px solid var(--danger);
+    color: var(--danger);
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    align-items: center;
+    gap: 8px;
+}
+.burnout-banner.show { display: flex; }
 
-                <!-- Chú giải Bản đồ nhiệt Điện thế -->
-                <div class="voltage-legend">
-                    <span data-i18n="heatmap_label">🌡️ Voltage Heatmap:</span>
-                    <div class="legend-bar-wrap">
-                        <span>0V (B)</span>
-                        <div class="legend-gradient"></div>
-                        <span id="legend-vs-max">12V (A)</span>
-                    </div>
-                    <span data-i18n="particle_hint" style="font-size: 0.72rem;">⚡ Dot speed ∝ Current (I)</span>
-                </div>
+.results-card { background: var(--surface); border-radius: 12px; border: 1px solid var(--border-color); padding: 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+.results-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.results-header h3 { font-size: 0.95rem; }
+.status-badge { font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; }
+.status-badge.balanced { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
+.status-badge.unbalanced { background: rgba(239, 68, 68, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+.metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.metric-item { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 8px; padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; box-shadow: 0 0 10px var(--accent-glow); transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+.metric-item:hover { border-color: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+.metric-item span { font-size: 0.75rem; color: var(--text-muted); }
+.metric-item strong { font-size: 1.05rem; color: var(--accent); }
+.highlight-box { border-color: var(--accent); background: var(--accent-glow); box-shadow: 0 0 15px var(--accent-glow); }
+.detailed-table-container { max-height: 165px; overflow-y: auto; overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-color); border-radius: 8px; background: var(--bg-secondary); }
+.detailed-table { width: 100%; min-width: 420px; border-collapse: collapse; font-size: 0.8rem; text-align: left; }
+.detailed-table th, .detailed-table td { padding: 8px 12px; border-bottom: 1px solid var(--border-color); }
+.detailed-table th { background: var(--surface); color: var(--text-muted); position: sticky; top: 0; }
+.detailed-table td { color: var(--text-main); }
+.overloaded-row td { color: var(--danger) !important; font-weight: 600; background: rgba(239, 68, 68, 0.08); }
 
-                <!-- Cảnh báo Quá tải Công suất (Cháy điện trở) -->
-                <div id="burnout-banner" class="burnout-banner">
-                    <span>🔥</span>
-                    <span id="burnout-text">OVERLOAD WARNING!</span>
-                </div>
+/* --- STEP-BY-STEP SOLUTION PANEL --- */
+.solution-toggle-btn { width: 100%; margin-top: 6px; padding: 10px; background: var(--surface); border: 1px dashed var(--border-color); color: var(--accent); font-weight: 600; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+.solution-toggle-btn:hover { background: var(--bg-primary); border-style: solid; box-shadow: 0 0 10px var(--accent-glow); }
+.step-by-step-panel { display: none; margin-top: 8px; padding: 16px; background: var(--bg-primary); border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.85rem; line-height: 1.6; }
+.step-by-step-panel.visible { display: block; }
+.step-by-step-panel p { margin-bottom: 8px; }
+.equation-block { margin-bottom: 16px; background: rgba(0,0,0,0.15); padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent); }
+.theory-eq { color: var(--text-muted); font-style: italic; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed var(--border-color); }
+.sub-eq { color: var(--text-main); margin-bottom: 6px; }
+.equation-line { color: var(--accent); font-weight: bold; background: rgba(0, 0, 0, 0.2); padding: 6px 10px; border-radius: 4px; }
 
-                <!-- KHUNG LUYỆN TẬP (QUIZ PANEL) -->
-                <div id="quiz-panel" class="quiz-panel">
-                    <div class="quiz-header">
-                        <h3 data-i18n="quiz_title">🎯 Practice Challenge</h3>
-                        <button id="exit-quiz-btn" class="quiz-action-btn" data-i18n="quiz_exit" style="padding: 4px 10px; font-size: 0.75rem;">Exit Quiz</button>
-                    </div>
-                    <p class="quiz-desc" data-i18n="quiz_desc">Results & heatmap are hidden! Calculate the circuit parameters using the random values on the left and enter your answers below (±2% tolerance):</p>
-                    
-                    <div class="quiz-inputs-grid">
-                        <div class="quiz-input-box">
-                            <label for="ans-req" data-i18n="quiz_ans_req">R<sub>eq</sub> [Ω]</label>
-                            <input type="number" id="ans-req" step="0.01" placeholder="0.00">
-                        </div>
-                        <div class="quiz-input-box">
-                            <label for="ans-vm" data-i18n="quiz_ans_vm">V<sub>m</sub> [V]</label>
-                            <input type="number" id="ans-vm" step="0.01" placeholder="0.00">
-                        </div>
-                        <div class="quiz-input-box">
-                            <label for="ans-ig" data-i18n="quiz_ans_ig">I<sub>5</sub> [mA] (+/-)</label>
-                            <input type="number" id="ans-ig" step="0.01" placeholder="0.00">
-                        </div>
-                    </div>
+/* --- BẢNG TRA CỨU LÝ THUYẾT (MODAL) --- */
+.theory-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); justify-content: center; align-items: center; }
+.theory-modal.show { display: flex; }
+.modal-content { background: var(--bg-primary); border: 1px solid var(--accent); border-radius: 12px; width: 90%; max-width: 700px; max-height: 85vh; overflow-y: auto; padding: 24px; box-shadow: 0 0 20px var(--accent-glow); position: relative; line-height: 1.6; }
+.modal-content h3 { color: var(--accent); margin-bottom: 12px; border-bottom: 1px dashed var(--border-color); padding-bottom: 8px; }
+.modal-content h4 { color: var(--text-main); margin: 16px 0 8px 0; }
+.modal-content ul { margin-left: 20px; color: var(--text-muted); font-size: 0.9rem; }
+.modal-content li { margin-bottom: 6px; }
+.modal-content p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 10px; }
+.close-modal-btn { position: absolute; right: 20px; top: 20px; background: var(--danger); color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-weight: bold; }
+.close-modal-btn:hover { background: #DC2626; }
+.theory-btn { background: rgba(0, 242, 254, 0.1); color: var(--accent); border-color: var(--accent); }
 
-                    <div class="quiz-actions">
-                        <button id="check-quiz-btn" class="quiz-action-btn primary" data-i18n="quiz_check">Check Answer</button>
-                        <button id="new-quiz-btn" class="quiz-action-btn" data-i18n="quiz_new">🎲 New Problem</button>
-                        <button id="reveal-quiz-btn" class="quiz-action-btn" data-i18n="quiz_reveal">👁️ Give Up & Show Solution</button>
-                    </div>
+/* --- CHẾ ĐỘ LUYỆN TẬP (QUIZ MODE) --- */
+.quiz-btn { background: rgba(16, 185, 129, 0.12); color: var(--success); border-color: var(--success); font-weight: 600; }
+.quiz-btn:hover { background: var(--success); color: #090A0F; border-color: var(--success); }
+.quiz-panel { display: none; background: var(--bg-primary); border: 1.5px solid var(--accent); border-radius: 12px; padding: 16px 20px; box-shadow: 0 0 18px var(--accent-glow); }
+.quiz-panel.active { display: block; }
+.quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.quiz-header h3 { color: var(--accent); font-size: 0.95rem; }
+.quiz-desc { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4; }
+.quiz-inputs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px; }
+@media(max-width: 600px) { .quiz-inputs-grid { grid-template-columns: 1fr; } }
+.quiz-input-box { display: flex; flex-direction: column; gap: 4px; }
+.quiz-input-box label { font-size: 0.75rem; color: var(--text-muted); }
+.quiz-input-box input { background: var(--surface); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 10px; color: var(--text-main); font-size: 0.9rem; outline: none; }
+.quiz-input-box input:focus { border-color: var(--accent); }
+.quiz-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.quiz-action-btn { padding: 8px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color); background: var(--surface); color: var(--text-main); transition: all 0.2s; }
+.quiz-action-btn.primary { background: var(--accent); color: #090A0F; border-color: var(--accent); }
+.quiz-action-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.quiz-feedback { margin-top: 12px; font-size: 0.82rem; padding: 10px 12px; border-radius: 6px; display: none; line-height: 1.5; }
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); color: var(--success); }
+.quiz-feedback.wrong { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--danger); color: var(--danger); }
 
-                    <div id="quiz-feedback" class="quiz-feedback"></div>
-                </div>
-
-                <div class="results-card" id="results-card">
-                    <div class="results-header">
-                        <h3 data-i18n="analysis_results">Analysis Results</h3>
-                        <div id="status-badge" class="status-badge unbalanced">Bridge Unbalanced</div>
-                    </div>
-                    <div class="metrics-grid">
-                        <div class="metric-item"><span data-i18n="req_label">Equivalent Resistance</span><strong id="req-result">0.00 Ω</strong></div>
-                        <div class="metric-item"><span data-i18n="itotal_label">Total Current</span><strong id="itotal-result">0.00 A</strong></div>
-                        <div class="metric-item"><span data-i18n="vm_label">Node M Voltage</span><strong id="vc-result">0.00 V</strong></div>
-                        <div class="metric-item"><span data-i18n="vn_label">Node N Voltage</span><strong id="vd-result">0.00 V</strong></div>
-                        <div class="metric-item highlight-box"><span data-i18n="ig_label">Galvanometer Current</span><strong id="ig-result">0.00 mA</strong></div>
-                        <div class="metric-item"><span data-i18n="u5_label">Voltage Drop</span><strong id="u5-result">0.00 V</strong></div>
-                    </div>
-
-                    <div class="detailed-table-container">
-                        <table class="detailed-table">
-                            <thead>
-                                <tr>
-                                    <th data-i18n="branch_th">Branch</th>
-                                    <th data-i18n="current_th">Current (I)</th>
-                                    <th data-i18n="voltage_th">Voltage (U)</th>
-                                    <th data-i18n="power_th">Power (P)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="detailed-tbody"></tbody>
-                        </table>
-                    </div>
-
-                    <button id="toggle-solution-btn" class="solution-toggle-btn" data-i18n="show_solution">Show Step-by-Step Solution</button>
-                    <div id="solution-panel" class="step-by-step-panel">
-                        <p><strong data-i18n="step_1_title">Step 1: System of Equations</strong></p>
-                        <div class="equation-block">
-                            <div class="theory-eq" data-i18n="kcl_nodes">KCL at Nodes M & N:</div>
-                            <div class="sub-eq">Node M: I<sub>1</sub> - I<sub>2</sub> - I<sub>5</sub> = 0</div>
-                            <div class="sub-eq" style="margin-bottom: 12px;">Node N: I<sub>3</sub> - I<sub>4</sub> + I<sub>5</sub> = 0</div>
-                            <div class="theory-eq" data-i18n="kvl_loops">KVL for 3 Loops:</div>
-                            <div class="sub-eq">Loop 1 (A-M-N-A): R<sub>1</sub>I<sub>1</sub> - R<sub>3</sub>I<sub>3</sub> + R<sub>5</sub>I<sub>5</sub> = 0</div>
-                            <div class="sub-eq">Loop 2 (M-B-N-M): -R<sub>2</sub>I<sub>2</sub> + R<sub>4</sub>I<sub>4</sub> + R<sub>5</sub>I<sub>5</sub> = 0</div>
-                            <div class="sub-eq">Loop 3 (A-M-B): R<sub>1</sub>I<sub>1</sub> + R<sub>2</sub>I<sub>2</sub> = V<sub>s</sub></div>
-                        </div>
-                        <p><strong data-i18n="step_2_title">Step 2: Substitute Real Values</strong></p>
-                        <div class="equation-block">
-                            <div id="sys-eq1" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                            <div id="sys-eq2" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                            <div id="sys-eq3" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                            <div id="sys-eq4" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                            <div id="sys-eq5" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                        </div>
-                        <p><strong data-i18n="step_3_title">Step 3: Solved Branch Currents</strong></p>
-                        <div class="equation-block" style="background: transparent; border: none; padding: 0;">
-                            <div class="equation-line">
-                                I<sub>1</sub> = <span id="step-i1"></span> A<br>
-                                I<sub>2</sub> = <span id="step-i2"></span> A<br>
-                                I<sub>3</sub> = <span id="step-i3"></span> A<br>
-                                I<sub>4</sub> = <span id="step-i4"></span> A<br>
-                                I<sub>5</sub> = <span id="step-i5"></span> A
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </main>
-    </div>
-
-    <!-- MODAL LÝ THUYẾT VẬT LÝ 11 -->
-    <div id="theory-modal" class="theory-modal">
-        <div class="modal-content">
-            <button id="close-theory-btn" class="close-modal-btn">X</button>
-            <h3 data-i18n="modal_title">Bí Kíp Giải Mạch Cầu (Vật Lý 11)</h3>
-            <h4 data-i18n="modal_h1">1. Nhận dạng mạch cầu và phân loại</h4>
-            <p data-i18n="modal_p1">Mạch cầu gồm 2 nút chính (M và N) mà điện trở R5 được mắc giữa 2 nút đó.</p>
-            <ul>
-                <li data-i18n="modal_l1"><strong>Mạch cầu cân bằng:</strong> Khi R1.R4 = R2.R3</li>
-                <li data-i18n="modal_l2"><strong>Mạch cầu không cân bằng:</strong> Khi R1.R4 ≠ R2.R3</li>
-            </ul>
-            <h4 data-i18n="modal_h2">2. Phương pháp giải mạch cầu cân bằng</h4>
-            <p data-i18n="modal_p2">Khi mạch cân bằng, hiệu điện thế U5 = 0 và cường độ dòng điện I5 = 0.</p>
-            <ul>
-                <li data-i18n="modal_l3"><strong>Bước 1:</strong> Kiểm tra điều kiện R1.R4 = R2.R3.</li>
-                <li data-i18n="modal_l4"><strong>Bước 2:</strong> Bỏ qua R5 khỏi mạch điện.</li>
-                <li data-i18n="modal_l5"><strong>Bước 3:</strong> Vẽ lại mạch: (R1 nt R3) // (R2 nt R4).</li>
-                <li data-i18n="modal_l6"><strong>Bước 4:</strong> Tính Rtđ = (R13 * R24) / (R13 + R24).</li>
-                <li data-i18n="modal_l7"><strong>Bước 5:</strong> Áp dụng định luật Ôm để tìm I, U.</li>
-            </ul>
-            <h4 data-i18n="modal_h3">3. Phương pháp giải mạch cầu không cân bằng (Khuyên dùng)</h4>
-            <p data-i18n="modal_p3">Sử dụng định luật Kiếc-sôp (Kirchhoff 1 & 2):</p>
-            <ul>
-                <li data-i18n="modal_l8"><strong>Bước 1:</strong> Đặt ẩn cường độ dòng điện trên các nhánh (I1 đến I5). Dùng quy tắc nút (KCL) để lập phương trình.</li>
-                <li data-i18n="modal_l9"><strong>Bước 2:</strong> Viết phương trình hiệu điện thế (KVL) theo các vòng kín của mạch.</li>
-                <li data-i18n="modal_l10"><strong>Bước 3:</strong> Giải hệ phương trình 5 ẩn để tìm các dòng điện.</li>
-            </ul>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
+.results-card.blind-mode .metrics-grid,
+.results-card.blind-mode .detailed-table-container,
+.results-card.blind-mode #status-badge {
+    filter: blur(8px);
+    pointer-events: none;
+    user-select: none;
+    opacity: 0.35;
+    transition: filter 0.3s ease, opacity 0.3s ease;
+}
