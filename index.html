@@ -8,13 +8,17 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Header -->
         <header class="app-header">
             <div class="logo-area">
                 <span class="pulse-dot"></span>
                 <h1 data-i18n="app_title">WHEATSTONE BRIDGE SOLVER</h1>
             </div>
+            
             <div class="header-controls">
+                <!-- Nút chuyển đổi ngôn ngữ mới -->
                 <button class="theme-btn" id="lang-toggle" title="Switch Language" style="font-weight: 700; background: var(--surface); border: 1px solid var(--border-color); border-radius: 8px; padding: 4px 10px; font-size: 0.9rem;">EN</button>
+                
                 <div class="theme-switcher">
                     <button class="theme-btn" id="theme-toggle" title="Toggle Dark/Light Mode">🌙</button>
                     <div class="accent-pickers">
@@ -24,57 +28,85 @@
                         <span class="dot amber" data-color="amber" title="Amber Gold"></span>
                     </div>
                 </div>
+
                 <div class="visitor-badge" id="visitor-counter">
                     👥 <span data-i18n="unique_visitors">UNIQUE VISITORS:</span> <span class="count-value">Loading...</span>
                 </div>
             </div>
         </header>
 
+        <!-- Main Dashboard Grid -->
         <main class="dashboard-grid">
+            <!-- Control Panel (Left) -->
             <section class="panel control-panel">
                 <div class="panel-header">
                     <h2 data-i18n="circuit_params">Circuit Parameters</h2>
-                    <div>
-                        <button id="preset-balanced" class="preset-btn" data-i18n="load_preset">Load Balanced</button>
-                        <button id="open-theory-btn" class="preset-btn theory-btn" data-i18n="theory_btn">📖 Cheat Sheet</button>
-                    </div>
+                    <button id="preset-balanced" class="preset-btn" data-i18n="load_preset">Load Balanced Preset</button>
                 </div>
+
                 <div class="input-group main-voltage">
                     <label for="vs" data-i18n="source_voltage">Source Voltage (Vs) [V]</label>
                     <input type="number" id="vs" value="12" step="0.1">
                 </div>
+
                 <div class="resistors-interactive-grid">
+                    <!-- R1 -->
                     <div class="interactive-input-group">
-                        <div class="label-row"><label for="r1" data-i18n="r1_label">R1 [Ω]</label><input type="number" id="r1" value="100" step="1"></div>
+                        <div class="label-row">
+                            <label for="r1" data-i18n="r1_label">R1 [Ω]</label>
+                            <input type="number" id="r1" value="100" step="1">
+                        </div>
                         <input type="range" id="r1-slider" min="1" max="1000" value="100" class="slider">
                     </div>
+                    <!-- R2 -->
                     <div class="interactive-input-group">
-                        <div class="label-row"><label for="r2" data-i18n="r2_label">R2 [Ω]</label><input type="number" id="r2" value="100" step="1"></div>
+                        <div class="label-row">
+                            <label for="r2" data-i18n="r2_label">R2 [Ω]</label>
+                            <input type="number" id="r2" value="100" step="1">
+                        </div>
                         <input type="range" id="r2-slider" min="1" max="1000" value="100" class="slider">
                     </div>
+                    <!-- R3 -->
                     <div class="interactive-input-group">
-                        <div class="label-row"><label for="r3" data-i18n="r3_label">R3 [Ω]</label><input type="number" id="r3" value="150" step="1"></div>
+                        <div class="label-row">
+                            <label for="r3" data-i18n="r3_label">R3 [Ω]</label>
+                            <input type="number" id="r3" value="150" step="1">
+                        </div>
                         <input type="range" id="r3-slider" min="1" max="1000" value="150" class="slider">
                     </div>
+                    <!-- R4 -->
                     <div class="interactive-input-group">
-                        <div class="label-row"><label for="r4" data-i18n="r4_label">R4 [Ω]</label><input type="number" id="r4" value="150" step="1"></div>
+                        <div class="label-row">
+                            <label for="r4" data-i18n="r4_label">R4 [Ω]</label>
+                            <input type="number" id="r4" value="150" step="1">
+                        </div>
                         <input type="range" id="r4-slider" min="1" max="1000" value="150" class="slider">
                     </div>
+                    <!-- R5 -->
                     <div class="interactive-input-group full-width">
-                        <div class="label-row"><label for="r5" data-i18n="r5_label">R5 (Galvanometer) [Ω]</label><input type="number" id="r5" value="220" step="1"></div>
+                        <div class="label-row">
+                            <label for="r5" data-i18n="r5_label">R5 (Galvanometer / Arm M-N) [Ω]</label>
+                            <input type="number" id="r5" value="220" step="1">
+                        </div>
                         <input type="range" id="r5-slider" min="1" max="1000" value="220" class="slider">
                     </div>
                 </div>
+
+                <!-- Notes Section -->
                 <div class="notes-container">
-                    <label for="lab-notes" data-i18n="lab_notes_label">📝 Lab Notes</label>
-                    <textarea id="lab-notes" data-i18n-placeholder="lab_notes_placeholder" placeholder="Type formulas..."></textarea>
+                    <label for="lab-notes" data-i18n="lab_notes_label">📝 Lab Notes & Observations</label>
+                    <textarea id="lab-notes" data-i18n-placeholder="lab_notes_placeholder" placeholder="Type your experimental notes or formulas here..."></textarea>
                 </div>
             </section>
 
+            <!-- Visualizer & Results (Right) -->
             <section class="panel visual-panel">
                 <div class="circuit-viewport">
                     <svg id="bridge-svg" viewBox="0 0 520 280" width="100%" height="100%">
+                        <!-- Connected Circuit Wires -->
                         <path class="circuit-line" d="M 40 140 H 135 M 205 70 H 230 M 260 70 H 305 M 205 210 H 230 M 260 210 H 305 M 375 140 H 460 M 245 70 V 100 M 245 180 V 210 M 135 70 H 205 M 135 210 H 205 M 305 70 H 375 M 305 210 H 375 M 135 70 V 140 M 135 140 V 210 M 375 70 V 140 M 375 140 V 210" />
+                        
+                        <!-- Pulsed Current Flow Overlays -->
                         <path id="flow-input" class="current-flow" d="M 40 140 H 135" />
                         <path id="flow-r1" class="current-flow" d="M 135 70 H 205" />
                         <path id="flow-r3" class="current-flow" d="M 135 210 H 205" />
@@ -82,24 +114,35 @@
                         <path id="flow-r2" class="current-flow" d="M 305 70 H 375" />
                         <path id="flow-r4" class="current-flow" d="M 305 210 H 375" />
                         <path id="flow-output" class="current-flow" d="M 375 140 H 460" />
+
+                        <!-- Resistor Rectangles -->
                         <rect x="135" y="55" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="135" y="195" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="230" y="100" width="30" height="80" rx="4" class="resistor-box" />
                         <rect x="305" y="55" width="70" height="30" rx="4" class="resistor-box" />
                         <rect x="305" y="195" width="70" height="30" rx="4" class="resistor-box" />
+
+                        <!-- Labels -->
                         <text x="170" y="75" text-anchor="middle" class="svg-label">R1</text>
                         <text x="170" y="215" text-anchor="middle" class="svg-label">R3</text>
                         <text x="245" y="144" text-anchor="middle" class="svg-label">R5</text>
                         <text x="340" y="75" text-anchor="middle" class="svg-label">R2</text>
                         <text x="340" y="215" text-anchor="middle" class="svg-label">R4</text>
+
+                        <!-- Nodes -->
                         <circle cx="135" cy="140" r="5" class="circuit-node" />
                         <text x="120" y="130" class="node-label">A</text>
+
                         <circle cx="375" cy="140" r="5" class="circuit-node" />
                         <text x="385" y="130" class="node-label">B</text>
+
                         <circle cx="245" cy="70" r="5" class="circuit-node" />
                         <text x="245" y="55" text-anchor="middle" class="node-label">M</text>
+
                         <circle cx="245" cy="210" r="5" class="circuit-node" />
                         <text x="245" y="230" text-anchor="middle" class="node-label">N</text>
+
+                        <!-- Source Direction Arrows -->
                         <polygon points="85,135 95,140 85,145" fill="var(--accent)" />
                         <polygon points="415,135 425,140 415,145" fill="var(--accent)" />
                     </svg>
@@ -108,17 +151,38 @@
                 <div class="results-card">
                     <div class="results-header">
                         <h3 data-i18n="analysis_results">Analysis Results</h3>
+                        <!-- Trạng thái (status) sẽ được script.js cập nhật tự động nên không gắn cứng data-i18n ở đây -->
                         <div id="status-badge" class="status-badge unbalanced">Bridge Unbalanced</div>
                     </div>
+                    
                     <div class="metrics-grid">
-                        <div class="metric-item"><span data-i18n="req_label">Equivalent Resistance</span><strong id="req-result">0.00 Ω</strong></div>
-                        <div class="metric-item"><span data-i18n="itotal_label">Total Current</span><strong id="itotal-result">0.00 A</strong></div>
-                        <div class="metric-item"><span data-i18n="vm_label">Node M Voltage</span><strong id="vc-result">0.00 V</strong></div>
-                        <div class="metric-item"><span data-i18n="vn_label">Node N Voltage</span><strong id="vd-result">0.00 V</strong></div>
-                        <div class="metric-item highlight-box"><span data-i18n="ig_label">Galvanometer Current</span><strong id="ig-result">0.00 mA</strong></div>
-                        <div class="metric-item"><span data-i18n="u5_label">Voltage Drop</span><strong id="u5-result">0.00 V</strong></div>
+                        <div class="metric-item">
+                            <span data-i18n="req_label">Equivalent Resistance (R<sub>eq</sub>)</span>
+                            <strong id="req-result">0.00 Ω</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span data-i18n="itotal_label">Total Current (I<sub>in</sub>)</span>
+                            <strong id="itotal-result">0.00 A</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span data-i18n="vm_label">Node M Voltage (V<sub>m</sub>)</span>
+                            <strong id="vc-result">0.00 V</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span data-i18n="vn_label">Node N Voltage (V<sub>n</sub>)</span>
+                            <strong id="vd-result">0.00 V</strong>
+                        </div>
+                        <div class="metric-item highlight-box">
+                            <span data-i18n="ig_label">Galvanometer Current (I<sub>g</sub> / I<sub>5</sub>)</span>
+                            <strong id="ig-result">0.00 mA</strong>
+                        </div>
+                        <div class="metric-item">
+                            <span data-i18n="u5_label">Voltage Drop (U<sub>5</sub>)</span>
+                            <strong id="u5-result">0.00 V</strong>
+                        </div>
                     </div>
 
+                    <!-- Detailed Results Table -->
                     <div class="detailed-table-container">
                         <table class="detailed-table">
                             <thead>
@@ -128,79 +192,15 @@
                                     <th data-i18n="voltage_th">Voltage (U)</th>
                                 </tr>
                             </thead>
-                            <tbody id="detailed-tbody"></tbody>
+                            <tbody id="detailed-tbody">
+                                <!-- Populated dynamically by script.js -->
+                            </tbody>
                         </table>
-                    </div>
-
-                    <button id="toggle-solution-btn" class="solution-toggle-btn" data-i18n="show_solution">Show Step-by-Step Solution</button>
-                    <div id="solution-panel" class="step-by-step-panel">
-                        <p><strong data-i18n="step_1_title">Step 1: System of Equations</strong></p>
-                        <div class="equation-block">
-                            <div class="theory-eq" data-i18n="kcl_nodes">KCL at Nodes M & N:</div>
-                            <div class="sub-eq">Node M: I<sub>1</sub> - I<sub>2</sub> - I<sub>5</sub> = 0</div>
-                            <div class="sub-eq" style="margin-bottom: 12px;">Node N: I<sub>3</sub> - I<sub>4</sub> + I<sub>5</sub> = 0</div>
-                            <div class="theory-eq" data-i18n="kvl_loops">KVL for 3 Loops:</div>
-                            <div class="sub-eq">Loop 1 (A-M-N-A): R<sub>1</sub>I<sub>1</sub> - R<sub>3</sub>I<sub>3</sub> + R<sub>5</sub>I<sub>5</sub> = 0</div>
-                            <div class="sub-eq">Loop 2 (M-B-N-M): -R<sub>2</sub>I<sub>2</sub> + R<sub>4</sub>I<sub>4</sub> + R<sub>5</sub>I<sub>5</sub> = 0</div>
-                            <div class="sub-eq">Loop 3 (A-M-B): R<sub>1</sub>I<sub>1</sub> + R<sub>2</sub>I<sub>2</sub> = V<sub>s</sub></div>
-                        </div>
-                        <p><strong data-i18n="step_2_title">Step 2: Substitute Real Values</strong></p>
-                        <div class="equation-block">
-                            <div id="sys-eq1" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                            <div id="sys-eq2" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                            <div id="sys-eq3" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                            <div id="sys-eq4" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                            <div id="sys-eq5" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
-                        </div>
-                        <p><strong data-i18n="step_3_title">Step 3: Solved Branch Currents</strong></p>
-                        <div class="equation-block" style="background: transparent; border: none; padding: 0;">
-                            <div class="equation-line">
-                                I<sub>1</sub> = <span id="step-i1"></span> A<br>
-                                I<sub>2</sub> = <span id="step-i2"></span> A<br>
-                                I<sub>3</sub> = <span id="step-i3"></span> A<br>
-                                I<sub>4</sub> = <span id="step-i4"></span> A<br>
-                                I<sub>5</sub> = <span id="step-i5"></span> A
-                            </div>
-                        </div>
                     </div>
                 </div>
             </section>
         </main>
     </div>
-
-    <!-- MODAL LÝ THUYẾT VẬT LÝ 11 -->
-    <div id="theory-modal" class="theory-modal">
-        <div class="modal-content">
-            <button id="close-theory-btn" class="close-modal-btn">X</button>
-            <h3 data-i18n="modal_title">Bí Kíp Giải Mạch Cầu (Vật Lý 11)</h3>
-            
-            <h4 data-i18n="modal_h1">1. Nhận dạng mạch cầu và phân loại</h4>
-            <p data-i18n="modal_p1">Mạch cầu gồm 2 nút chính (M và N) mà điện trở R5 được mắc giữa 2 nút đó.</p>
-            <ul>
-                <li data-i18n="modal_l1"><strong>Mạch cầu cân bằng:</strong> Khi R1.R4 = R2.R3</li>
-                <li data-i18n="modal_l2"><strong>Mạch cầu không cân bằng:</strong> Khi R1.R4 ≠ R2.R3</li>
-            </ul>
-
-            <h4 data-i18n="modal_h2">2. Phương pháp giải mạch cầu cân bằng</h4>
-            <p data-i18n="modal_p2">Khi mạch cân bằng, hiệu điện thế U5 = 0 và cường độ dòng điện I5 = 0.</p>
-            <ul>
-                <li data-i18n="modal_l3"><strong>Bước 1:</strong> Kiểm tra điều kiện R1.R4 = R2.R3.</li>
-                <li data-i18n="modal_l4"><strong>Bước 2:</strong> Bỏ qua R5 khỏi mạch điện.</li>
-                <li data-i18n="modal_l5"><strong>Bước 3:</strong> Vẽ lại mạch: (R1 nt R3) // (R2 nt R4).</li>
-                <li data-i18n="modal_l6"><strong>Bước 4:</strong> Tính Rtđ = (R13 * R24) / (R13 + R24).</li>
-                <li data-i18n="modal_l7"><strong>Bước 5:</strong> Áp dụng định luật Ôm để tìm I, U.</li>
-            </ul>
-
-            <h4 data-i18n="modal_h3">3. Phương pháp giải mạch cầu không cân bằng (Khuyên dùng)</h4>
-            <p data-i18n="modal_p3">Sử dụng định luật Kiếc-sôp (Kirchhoff 1 & 2):</p>
-            <ul>
-                <li data-i18n="modal_l8"><strong>Bước 1:</strong> Đặt ẩn cường độ dòng điện trên các nhánh (I1 đến I5). Dùng quy tắc nút (KCL) để lập phương trình.</li>
-                <li data-i18n="modal_l9"><strong>Bước 2:</strong> Viết phương trình hiệu điện thế (KVL) theo các vòng kín của mạch.</li>
-                <li data-i18n="modal_l10"><strong>Bước 3:</strong> Giải hệ phương trình 5 ẩn để tìm các dòng điện.</li>
-            </ul>
-        </div>
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html>
