@@ -161,7 +161,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSyncInputAndSlider('r4', 'r4-slider');
     setupSyncInputAndSlider('r5', 'r5-slider');
     
-    document.getElementById('pmax').addEventListener('change', computeWheatstoneBridge);
+    const pmaxEl = document.getElementById('pmax');
+    if (pmaxEl) pmaxEl.addEventListener('change', computeWheatstoneBridge);
+    
     document.getElementById('preset-balanced').addEventListener('click', loadPreset);
     
     initTheoryModal();
@@ -410,7 +412,8 @@ function computeWheatstoneBridge() {
     const R3 = parseFloat(document.getElementById('r3').value);
     const R4 = parseFloat(document.getElementById('r4').value);
     const R5 = parseFloat(document.getElementById('r5').value);
-    const Pmax = parseFloat(document.getElementById('pmax').value);
+    const pmaxEl = document.getElementById('pmax');
+    const Pmax = pmaxEl ? parseFloat(pmaxEl.value) : 0.5;
 
     const dict = i18n[currentLang];
 
@@ -447,11 +450,15 @@ function computeWheatstoneBridge() {
     const isBalanced = Math.abs(I5 * 1000) < 0.01;
 
     // 1. CẬP NHẬT BẢN ĐỒ NHIỆT ĐIỆN THẾ (VOLTAGE COLOR MAPPING)
-    document.getElementById('legend-vs-max').textContent = `${Vs}V (A)`;
+    const legendMax = document.getElementById('legend-vs-max');
+    if (legendMax) legendMax.textContent = `${Vs}V (A)`;
+    
     if (isQuizMode) {
         ['a', 'm', 'n', 'b'].forEach(node => {
-            document.getElementById(`wire-node-${node}`).style.stroke = 'var(--text-muted)';
-            document.getElementById(`node-dot-${node}`).style.fill = 'var(--accent)';
+            const wire = document.getElementById(`wire-node-${node}`);
+            const dot = document.getElementById(`node-dot-${node}`);
+            if (wire) wire.style.stroke = 'var(--text-muted)';
+            if (dot) dot.style.fill = 'var(--accent)';
         });
     } else {
         const colA = getVoltageColor(Vs, Vs);
@@ -493,23 +500,27 @@ function computeWheatstoneBridge() {
         const isOver = !isQuizMode && (b.P > Pmax);
         const boxEl = document.getElementById(`box-${b.id}`);
         const fireEl = document.getElementById(`fire-${b.id}`);
-        if (isOver) {
-            boxEl.classList.add('overloaded');
-            fireEl.classList.add('visible');
-            overloadedNames.push(`${b.id.toUpperCase()} (${b.P.toFixed(2)}W)`);
-        } else {
-            boxEl.classList.remove('overloaded');
-            fireEl.classList.remove('visible');
+        if (boxEl && fireEl) {
+            if (isOver) {
+                boxEl.classList.add('overloaded');
+                fireEl.classList.add('visible');
+                overloadedNames.push(`${b.id.toUpperCase()} (${b.P.toFixed(2)}W)`);
+            } else {
+                boxEl.classList.remove('overloaded');
+                fireEl.classList.remove('visible');
+            }
         }
     });
 
     const burnoutBanner = document.getElementById('burnout-banner');
     const burnoutText = document.getElementById('burnout-text');
-    if (overloadedNames.length > 0) {
-        burnoutBanner.classList.add('show');
-        burnoutText.textContent = dict.burnout_prefix + overloadedNames.join(', ') + dict.burnout_suffix;
-    } else {
-        burnoutBanner.classList.remove('show');
+    if (burnoutBanner && burnoutText) {
+        if (overloadedNames.length > 0) {
+            burnoutBanner.classList.add('show');
+            burnoutText.textContent = dict.burnout_prefix + overloadedNames.join(', ') + dict.burnout_suffix;
+        } else {
+            burnoutBanner.classList.remove('show');
+        }
     }
 
     // 4. CẬP NHẬT THẺ KẾT QUẢ & BẢNG CHI TIẾT
