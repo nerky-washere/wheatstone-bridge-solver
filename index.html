@@ -32,11 +32,12 @@
 
         <main class="dashboard-grid">
             <section class="panel control-panel">
-                <div class="panel-header">
+                <div class="panel-header" style="flex-wrap: wrap; gap: 8px;">
                     <h2 data-i18n="circuit_params">Circuit Parameters</h2>
-                    <div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                         <button id="preset-balanced" class="preset-btn" data-i18n="load_preset">Load Balanced</button>
                         <button id="open-theory-btn" class="preset-btn theory-btn" data-i18n="theory_btn">📖 Cheat Sheet</button>
+                        <button id="start-quiz-btn" class="preset-btn quiz-btn" data-i18n="quiz_btn">🎯 Practice Quiz</button>
                     </div>
                 </div>
                 <div class="input-group main-voltage">
@@ -105,7 +106,39 @@
                     </svg>
                 </div>
 
-                <div class="results-card">
+                <!-- KHUNG LUYỆN TẬP (QUIZ PANEL) -->
+                <div id="quiz-panel" class="quiz-panel">
+                    <div class="quiz-header">
+                        <h3 data-i18n="quiz_title">🎯 Practice Challenge</h3>
+                        <button id="exit-quiz-btn" class="quiz-action-btn" data-i18n="quiz_exit" style="padding: 4px 10px; font-size: 0.75rem;">Exit Quiz</button>
+                    </div>
+                    <p class="quiz-desc" data-i18n="quiz_desc">Results are hidden! Calculate the circuit parameters using the random values on the left and enter your answers below (±2% tolerance):</p>
+                    
+                    <div class="quiz-inputs-grid">
+                        <div class="quiz-input-box">
+                            <label for="ans-req" data-i18n="quiz_ans_req">R<sub>eq</sub> [Ω]</label>
+                            <input type="number" id="ans-req" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="quiz-input-box">
+                            <label for="ans-vm" data-i18n="quiz_ans_vm">V<sub>m</sub> [V]</label>
+                            <input type="number" id="ans-vm" step="0.01" placeholder="0.00">
+                        </div>
+                        <div class="quiz-input-box">
+                            <label for="ans-ig" data-i18n="quiz_ans_ig">I<sub>5</sub> [mA] (+/-)</label>
+                            <input type="number" id="ans-ig" step="0.01" placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <div class="quiz-actions">
+                        <button id="check-quiz-btn" class="quiz-action-btn primary" data-i18n="quiz_check">Check Answer</button>
+                        <button id="new-quiz-btn" class="quiz-action-btn" data-i18n="quiz_new">🎲 New Problem</button>
+                        <button id="reveal-quiz-btn" class="quiz-action-btn" data-i18n="quiz_reveal">👁️ Give Up & Show Solution</button>
+                    </div>
+
+                    <div id="quiz-feedback" class="quiz-feedback"></div>
+                </div>
+
+                <div class="results-card" id="results-card">
                     <div class="results-header">
                         <h3 data-i18n="analysis_results">Analysis Results</h3>
                         <div id="status-badge" class="status-badge unbalanced">Bridge Unbalanced</div>
