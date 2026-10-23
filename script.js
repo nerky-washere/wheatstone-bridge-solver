@@ -1,9 +1,7 @@
-let animationTimer = null;
 let currentLang = localStorage.getItem('wb_lang') || 'en';
 let isQuizMode = false;
 let currentSolutions = { Req: 0, Vm: 0, Vn: 0, I5_mA: 0 };
 
-// Bộ từ điển Đa ngôn ngữ (Bao gồm Modal Lý thuyết & Chế độ Luyện tập)
 const i18n = {
     en: {
         app_title: "WHEATSTONE BRIDGE SOLVER",
@@ -13,26 +11,33 @@ const i18n = {
         theory_btn: "📖 Cheat Sheet",
         quiz_btn: "🎯 Practice Quiz",
         source_voltage: "Source Voltage (Vs) [V]",
+        pmax_label: "Max Power Rating (P<sub>max</sub>)",
         r1_label: "R1 [Ω]",
         r2_label: "R2 [Ω]",
         r3_label: "R3 [Ω]",
         r4_label: "R4 [Ω]",
         r5_label: "R5 (Galvanometer) [Ω]",
         lab_notes_label: "📝 Lab Notes",
-        lab_notes_placeholder: "Type formulas...",
+        lab_notes_placeholder: "Type experimental notes or formulas...",
+        heatmap_label: "🌡️ Voltage Heatmap:",
+        particle_hint: "⚡ Dot speed & size ∝ Current (I)",
         analysis_results: "Analysis Results",
         req_label: "Equivalent Resistance",
         itotal_label: "Total Current",
         vm_label: "Node M Voltage",
         vn_label: "Node N Voltage",
         ig_label: "Galvanometer Current",
-        u5_label: "Voltage Drop",
+        u5_label: "Voltage Drop (U5)",
         branch_th: "Branch",
         current_th: "Current (I)",
         voltage_th: "Voltage (U)",
+        power_th: "Power (P)",
         status_invalid: "Invalid Input",
         status_balanced: "Bridge Balanced",
         status_unbalanced: "Bridge Unbalanced",
+        status_overloaded: "⚠️ Component Overloaded!",
+        burnout_prefix: "THERMAL OVERLOAD: ",
+        burnout_suffix: " exceeded max power rating and is overheating!",
         show_solution: "Show Step-by-Step Solution",
         hide_solution: "Hide Solution",
         step_1_title: "Step 1: System of Equations",
@@ -59,7 +64,7 @@ const i18n = {
         modal_l10: "<strong>Step 3:</strong> Solve the 5-variable system of equations.",
         quiz_title: "🎯 Practice Challenge",
         quiz_exit: "Exit Quiz",
-        quiz_desc: "Results are hidden! Calculate the circuit parameters using the random values on the left and enter your answers below (±2% tolerance):",
+        quiz_desc: "Results & heatmap are hidden! Calculate the circuit parameters using the random values on the left and enter your answers below (±2% tolerance):",
         quiz_ans_req: "R<sub>eq</sub> [Ω]",
         quiz_ans_vm: "V<sub>m</sub> [V]",
         quiz_ans_ig: "I<sub>5</sub> [mA] (+/-)",
@@ -69,36 +74,43 @@ const i18n = {
         quiz_msg_empty: "⚠️ Please enter all 3 values before checking!",
         quiz_msg_correct: "🎉 Excellent! All your calculations are accurate. Results unlocked!",
         quiz_msg_wrong: "❌ Not quite right. Check: ",
-        quiz_msg_revealed: "💡 Solution unlocked! Review the step-by-step equations below to see how it's solved."
+        quiz_msg_revealed: "💡 Solution unlocked! Review the step-by-step equations below."
     },
     vi: {
         app_title: "BỘ GIẢI MẠCH CẦU WHEATSTONE",
         unique_visitors: "LƯỢT TRUY CẬP:",
         circuit_params: "Thông Số Mạch Điện",
-        load_preset: "Tải Mạch Cân Bằng",
+        load_preset: "Mạch Cân Bằng",
         theory_btn: "📖 Bí Kíp",
         quiz_btn: "🎯 Luyện Tập",
         source_voltage: "Điện Áp Nguồn (Vs) [V]",
+        pmax_label: "Công Suất Chịu Tải (P<sub>max</sub>)",
         r1_label: "Điện trở R1 [Ω]",
         r2_label: "Điện trở R2 [Ω]",
         r3_label: "Điện trở R3 [Ω]",
         r4_label: "Điện trở R4 [Ω]",
         r5_label: "R5 (Điện kế / Nhánh M-N) [Ω]",
-        lab_notes_label: "📝 Ghi Chú",
-        lab_notes_placeholder: "Nhập công thức...",
+        lab_notes_label: "📝 Ghi Chú Thực Nghiệm",
+        lab_notes_placeholder: "Nhập ghi chú hoặc công thức...",
+        heatmap_label: "🌡️ Bản Đồ Nhiệt Điện Thế:",
+        particle_hint: "⚡ Tốc độ & độ lớn hạt ∝ Dòng điện (I)",
         analysis_results: "Kết Quả Phân Tích",
         req_label: "Điện Trở Tương Đương",
         itotal_label: "Dòng Điện Tổng",
         vm_label: "Điện Thế Nút M",
         vn_label: "Điện Thế Nút N",
         ig_label: "Dòng Qua Điện Kế",
-        u5_label: "Độ Sụt Áp",
+        u5_label: "Độ Sụt Áp (U5)",
         branch_th: "Nhánh",
         current_th: "Dòng điện (I)",
         voltage_th: "Điện áp (U)",
+        power_th: "Công suất (P)",
         status_invalid: "Đầu Vào Không Hợp Lệ",
         status_balanced: "Cầu Cân Bằng",
         status_unbalanced: "Cầu Lệch (Không Cân Bằng)",
+        status_overloaded: "⚠️ Quá Tải Linh Kiện!",
+        burnout_prefix: "CẢNH BÁO CHÁY NỔ: Điện trở ",
+        burnout_suffix: " vượt quá công suất chịu tải định mức và đang bốc khói!",
         show_solution: "Hiển Thị Lời Giải Chi Tiết",
         hide_solution: "Ẩn Lời Giải",
         step_1_title: "Bước 1: Hệ phương trình Kirchhoff",
@@ -125,7 +137,7 @@ const i18n = {
         modal_l10: "<strong>Bước 3:</strong> Giải hệ phương trình 5 ẩn để tìm các dòng điện.",
         quiz_title: "🎯 Thử Thách Luyện Tập",
         quiz_exit: "Thoát Luyện Tập",
-        quiz_desc: "Kết quả đã được ẩn! Hãy tự tính toán dựa trên bộ thông số đề bài bên trái và nhập đáp án vào dưới đây (sai số cho phép ±2%):",
+        quiz_desc: "Kết quả và màu nhiệt đã được ẩn! Hãy tự tính toán dựa trên thông số bên trái và nhập đáp án vào dưới đây (sai số ±2%):",
         quiz_ans_req: "R<sub>tđ</sub> [Ω]",
         quiz_ans_vm: "V<sub>m</sub> [V]",
         quiz_ans_ig: "I<sub>5</sub> [mA] (+/-)",
@@ -133,7 +145,7 @@ const i18n = {
         quiz_new: "🎲 Đổi Đề Khác",
         quiz_reveal: "👁️ Xem Đáp Án & Lời Giải",
         quiz_msg_empty: "⚠️ Vui lòng nhập đầy đủ cả 3 đáp án trước khi kiểm tra!",
-        quiz_msg_correct: "🎉 Chính xác tuyệt đối! Bạn nắm bài rất chắc. Đã mở khóa bảng kết quả!",
+        quiz_msg_correct: "🎉 Chính xác tuyệt đối! Đã mở khóa bảng kết quả và mô phỏng dòng điện!",
         quiz_msg_wrong: "❌ Chưa chính xác. Hãy kiểm tra lại: ",
         quiz_msg_revealed: "💡 Đã mở khóa đáp án! Bạn có thể xem chi tiết từng bước giải ở phía dưới."
     }
@@ -148,14 +160,14 @@ document.addEventListener('DOMContentLoaded', () => {
     setupSyncInputAndSlider('r3', 'r3-slider');
     setupSyncInputAndSlider('r4', 'r4-slider');
     setupSyncInputAndSlider('r5', 'r5-slider');
+    
+    document.getElementById('pmax').addEventListener('change', computeWheatstoneBridge);
     document.getElementById('preset-balanced').addEventListener('click', loadPreset);
     
     initTheoryModal();
     initQuizMode();
-
-    computeWheatstoneBridge();
     initThemeEngine();
-    startAnimationLoop();
+    computeWheatstoneBridge();
 });
 
 function initI18n() {
@@ -174,7 +186,7 @@ function initI18n() {
     const solutionPanel = document.getElementById('solution-panel');
     
     toggleBtn.addEventListener('click', () => {
-        if (isQuizMode) return; // Không cho mở lời giải khi đang giấu đáp án
+        if (isQuizMode) return;
         const isVisible = solutionPanel.classList.toggle('visible');
         toggleBtn.setAttribute('data-i18n', isVisible ? 'hide_solution' : 'show_solution');
         applyTranslations();
@@ -207,35 +219,19 @@ function initTheoryModal() {
     });
 }
 
-// --- LOGIC CHẾ ĐỘ LUYỆN TẬP (QUIZ MODE) ---
 function initQuizMode() {
-    const startBtn = document.getElementById('start-quiz-btn');
-    const exitBtn = document.getElementById('exit-quiz-btn');
-    const newBtn = document.getElementById('new-quiz-btn');
-    const checkBtn = document.getElementById('check-quiz-btn');
-    const revealBtn = document.getElementById('reveal-quiz-btn');
-
-    startBtn.addEventListener('click', () => {
-        startNewQuiz();
-    });
-
-    newBtn.addEventListener('click', () => {
-        startNewQuiz();
-    });
-
-    exitBtn.addEventListener('click', () => {
+    document.getElementById('start-quiz-btn').addEventListener('click', startNewQuiz);
+    document.getElementById('new-quiz-btn').addEventListener('click', startNewQuiz);
+    document.getElementById('exit-quiz-btn').addEventListener('click', () => {
         setQuizState(false);
+        computeWheatstoneBridge();
     });
+    document.getElementById('check-quiz-btn').addEventListener('click', checkQuizAnswers);
 
-    checkBtn.addEventListener('click', () => {
-        checkQuizAnswers();
-    });
-
-    revealBtn.addEventListener('click', () => {
+    document.getElementById('reveal-quiz-btn').addEventListener('click', () => {
         const dict = i18n[currentLang];
         const feedback = document.getElementById('quiz-feedback');
         
-        // Mở khóa kết quả và tự động bung bảng lời giải chi tiết
         document.getElementById('results-card').classList.remove('blind-mode');
         isQuizMode = false;
         
@@ -246,6 +242,7 @@ function initQuizMode() {
         solutionPanel.classList.add('visible');
         toggleBtn.setAttribute('data-i18n', 'hide_solution');
         applyTranslations();
+        computeWheatstoneBridge();
 
         feedback.textContent = dict.quiz_msg_revealed;
         feedback.className = 'quiz-feedback show correct';
@@ -253,10 +250,9 @@ function initQuizMode() {
 }
 
 function startNewQuiz() {
-    // Tạo bộ số ngẫu nhiên chẵn chục để học sinh dễ bấm máy tính
-    const voltages = [6, 9, 12, 15, 18, 24, 30];
+    const voltages = [6, 9, 12, 15, 18, 24];
     const randVs = voltages[Math.floor(Math.random() * voltages.length)];
-    const randR = () => (Math.floor(Math.random() * 19) + 2) * 10; // Từ 20 đến 200 Ohm
+    const randR = () => (Math.floor(Math.random() * 19) + 2) * 10;
 
     const r1 = randR(), r2 = randR(), r3 = randR(), r4 = randR(), r5 = randR();
 
@@ -267,7 +263,6 @@ function startNewQuiz() {
     document.getElementById('r4').value = r4; document.getElementById('r4-slider').value = r4;
     document.getElementById('r5').value = r5; document.getElementById('r5-slider').value = r5;
 
-    // Xóa trắng ô nhập cũ
     document.getElementById('ans-req').value = '';
     document.getElementById('ans-vm').value = '';
     document.getElementById('ans-ig').value = '';
@@ -314,7 +309,6 @@ function checkQuizAnswers() {
         return;
     }
 
-    // Kiểm tra dung sai 2% hoặc sai số làm tròn ±0.05
     const isClose = (userVal, trueVal) => {
         const tol = Math.max(Math.abs(trueVal) * 0.02, 0.05);
         return Math.abs(userVal - trueVal) <= tol;
@@ -327,12 +321,12 @@ function checkQuizAnswers() {
     if (okReq && okVm && okIg) {
         feedback.textContent = dict.quiz_msg_correct;
         feedback.className = 'quiz-feedback show correct';
-        // Mở khóa bảng kết quả khi làm đúng
         document.getElementById('results-card').classList.remove('blind-mode');
         isQuizMode = false;
         const toggleBtn = document.getElementById('toggle-solution-btn');
         toggleBtn.disabled = false;
         toggleBtn.style.opacity = '1';
+        computeWheatstoneBridge();
     } else {
         let wrongList = [];
         if (!okReq) wrongList.push(currentLang === 'en' ? 'Req' : 'Rtđ');
@@ -373,7 +367,41 @@ async function fetchVisitorCount() {
     }
 }
 
-let currentStates = { I1: 0, I2: 0, I3: 0, I4: 0, I5: 0, I_total: 0 };
+// --- HÀM TÍNH MÀU BẢN ĐỒ NHIỆT ĐIỆN THẾ (VOLTAGE HEATMAP) ---
+function getVoltageColor(v, vs) {
+    if (vs <= 0) return '#3B82F6';
+    const ratio = Math.max(0, Math.min(1, v / vs));
+    // Nội suy Hue từ 220 (Xanh dương = 0V) -> 120 (Xanh lá = trung bình) -> 0 (Đỏ rực = Vs)
+    const hue = Math.round((1 - ratio) * 220);
+    return `hsl(${hue}, 90%, 55%)`;
+}
+
+// --- HÀM CẬP NHẬT HẠT DÒNG ĐIỆN TỶ LỆ THUẬN VỚI CƯỜNG ĐỘ I ---
+function updateContinuousParticleFlow(elementId, currentAmp) {
+    const el = document.getElementById(elementId);
+    if (!el) return;
+
+    const absI = Math.abs(currentAmp);
+    const tolerance = 1e-4; // Ngưỡng 0.1 mA
+
+    if (isQuizMode || absI < tolerance) {
+        el.classList.remove('flowing-forward', 'flowing-reverse');
+        el.style.opacity = '0';
+        return;
+    }
+
+    el.classList.remove('flowing-forward', 'flowing-reverse');
+    el.classList.add(currentAmp >= 0 ? 'flowing-forward' : 'flowing-reverse');
+
+    // Tốc độ hạt: I càng lớn, duration càng nhỏ (chạy càng nhanh, từ 0.18s đến 2.2s)
+    const duration = Math.max(0.18, Math.min(2.2, 0.12 / absI));
+    el.style.animationDuration = `${duration.toFixed(2)}s`;
+
+    // Độ lớn của hạt tỷ lệ thuận với cường độ dòng điện (từ 3px đến 6.5px)
+    const strokeW = Math.max(3, Math.min(6.5, 2.8 + absI * 12));
+    el.style.strokeWidth = `${strokeW.toFixed(1)}px`;
+    el.style.opacity = '0.95';
+}
 
 function computeWheatstoneBridge() {
     const Vs = parseFloat(document.getElementById('vs').value);
@@ -382,11 +410,12 @@ function computeWheatstoneBridge() {
     const R3 = parseFloat(document.getElementById('r3').value);
     const R4 = parseFloat(document.getElementById('r4').value);
     const R5 = parseFloat(document.getElementById('r5').value);
+    const Pmax = parseFloat(document.getElementById('pmax').value);
 
     const dict = i18n[currentLang];
 
     if (isNaN(Vs) || isNaN(R1) || isNaN(R2) || isNaN(R3) || isNaN(R4) || isNaN(R5) ||
-        R1 <= 0 || R2 <= 0 || R3 <= 0 || R4 <= 0 || R5 <= 0) {
+        Vs < 0 || R1 <= 0 || R2 <= 0 || R3 <= 0 || R4 <= 0 || R5 <= 0) {
         document.getElementById('status-badge').textContent = dict.status_invalid;
         document.getElementById('status-badge').className = 'status-badge unbalanced';
         return;
@@ -405,20 +434,85 @@ function computeWheatstoneBridge() {
     const Vm = ((b1 * a22) - (b2 * a12)) / D;
     const Vn = ((a11 * b2) - (a21 * b1)) / D;
 
-    const U1 = Vs - Vm; const I1 = U1 / R1;
-    const U3 = Vs - Vn; const I3 = U3 / R3;
-    const U5 = Vm - Vn; const I5 = U5 / R5;
-    const U2 = Vm;      const I2 = U2 / R2;
-    const U4 = Vn;      const I4 = U4 / R4;
+    const U1 = Vs - Vm; const I1 = U1 / R1; const P1 = I1 * I1 * R1;
+    const U2 = Vm;      const I2 = U2 / R2; const P2 = I2 * I2 * R2;
+    const U3 = Vs - Vn; const I3 = U3 / R3; const P3 = I3 * I3 * R3;
+    const U4 = Vn;      const I4 = U4 / R4; const P4 = I4 * I4 * R4;
+    const U5 = Vm - Vn; const I5 = U5 / R5; const P5 = I5 * I5 * R5;
 
     const I_total = I1 + I3;
     const Req = I_total > 0 ? Vs / I_total : 0;
     
-    currentStates = { I1, I2, I3, I4, I5, I_total };
     currentSolutions = { Req: Req, Vm: Vm, Vn: Vn, I5_mA: I5 * 1000 };
-    
     const isBalanced = Math.abs(I5 * 1000) < 0.01;
 
+    // 1. CẬP NHẬT BẢN ĐỒ NHIỆT ĐIỆN THẾ (VOLTAGE COLOR MAPPING)
+    document.getElementById('legend-vs-max').textContent = `${Vs}V (A)`;
+    if (isQuizMode) {
+        ['a', 'm', 'n', 'b'].forEach(node => {
+            document.getElementById(`wire-node-${node}`).style.stroke = 'var(--text-muted)';
+            document.getElementById(`node-dot-${node}`).style.fill = 'var(--accent)';
+        });
+    } else {
+        const colA = getVoltageColor(Vs, Vs);
+        const colM = getVoltageColor(Vm, Vs);
+        const colN = getVoltageColor(Vn, Vs);
+        const colB = getVoltageColor(0, Vs);
+
+        document.getElementById('wire-node-a').style.stroke = colA;
+        document.getElementById('wire-node-m').style.stroke = colM;
+        document.getElementById('wire-node-n').style.stroke = colN;
+        document.getElementById('wire-node-b').style.stroke = colB;
+
+        document.getElementById('node-dot-a').style.fill = colA;
+        document.getElementById('node-dot-m').style.fill = colM;
+        document.getElementById('node-dot-n').style.fill = colN;
+        document.getElementById('node-dot-b').style.fill = colB;
+    }
+
+    // 2. CẬP NHẬT HẠT DÒNG ĐIỆN LIÊN TỤC THEO CƯỜNG ĐỘ I
+    updateContinuousParticleFlow('flow-input', I_total);
+    updateContinuousParticleFlow('flow-r1', I1);
+    updateContinuousParticleFlow('flow-r2', I2);
+    updateContinuousParticleFlow('flow-r3', I3);
+    updateContinuousParticleFlow('flow-r4', I4);
+    updateContinuousParticleFlow('flow-r5', I5);
+    updateContinuousParticleFlow('flow-output', I_total);
+
+    // 3. KIỂM TRA QUÁ TẢI CÔNG SUẤT & HIỆU ỨNG CHÁY ĐIỆN TRỞ
+    const branches = [
+        { id: 'r1', name: 'R1', I: I1, U: U1, P: P1 },
+        { id: 'r2', name: 'R2', I: I2, U: U2, P: P2 },
+        { id: 'r3', name: 'R3', I: I3, U: U3, P: P3 },
+        { id: 'r4', name: 'R4', I: I4, U: U4, P: P4 },
+        { id: 'r5', name: 'R5 (M-N)', I: I5, U: U5, P: P5, isGalvano: true }
+    ];
+
+    let overloadedNames = [];
+    branches.forEach(b => {
+        const isOver = !isQuizMode && (b.P > Pmax);
+        const boxEl = document.getElementById(`box-${b.id}`);
+        const fireEl = document.getElementById(`fire-${b.id}`);
+        if (isOver) {
+            boxEl.classList.add('overloaded');
+            fireEl.classList.add('visible');
+            overloadedNames.push(`${b.id.toUpperCase()} (${b.P.toFixed(2)}W)`);
+        } else {
+            boxEl.classList.remove('overloaded');
+            fireEl.classList.remove('visible');
+        }
+    });
+
+    const burnoutBanner = document.getElementById('burnout-banner');
+    const burnoutText = document.getElementById('burnout-text');
+    if (overloadedNames.length > 0) {
+        burnoutBanner.classList.add('show');
+        burnoutText.textContent = dict.burnout_prefix + overloadedNames.join(', ') + dict.burnout_suffix;
+    } else {
+        burnoutBanner.classList.remove('show');
+    }
+
+    // 4. CẬP NHẬT THẺ KẾT QUẢ & BẢNG CHI TIẾT
     document.getElementById('vc-result').textContent = Vm.toFixed(3) + ' V';
     document.getElementById('vd-result').textContent = Vn.toFixed(3) + ' V';
     document.getElementById('ig-result').textContent = (I5 * 1000).toFixed(3) + ' mA';
@@ -427,7 +521,10 @@ function computeWheatstoneBridge() {
     document.getElementById('u5-result').textContent = Math.abs(U5).toFixed(3) + ' V';
 
     const statusBadge = document.getElementById('status-badge');
-    if (isBalanced) {
+    if (overloadedNames.length > 0) {
+        statusBadge.textContent = dict.status_overloaded;
+        statusBadge.className = 'status-badge unbalanced';
+    } else if (isBalanced) {
         statusBadge.textContent = dict.status_balanced;
         statusBadge.className = 'status-badge balanced';
     } else {
@@ -436,14 +533,19 @@ function computeWheatstoneBridge() {
     }
 
     const tbody = document.getElementById('detailed-tbody');
-    tbody.innerHTML = `
-        <tr><td><strong>R1</strong></td><td>${I1.toFixed(4)} A</td><td>${Math.abs(U1).toFixed(3)} V</td></tr>
-        <tr><td><strong>R2</strong></td><td>${I2.toFixed(4)} A</td><td>${Math.abs(U2).toFixed(3)} V</td></tr>
-        <tr><td><strong>R3</strong></td><td>${I3.toFixed(4)} A</td><td>${Math.abs(U3).toFixed(3)} V</td></tr>
-        <tr><td><strong>R4</strong></td><td>${I4.toFixed(4)} A</td><td>${Math.abs(U4).toFixed(3)} V</td></tr>
-        <tr><td><strong>R5 (M-N)</strong></td><td>${(I5 * 1000).toFixed(3)} mA</td><td>${Math.abs(U5).toFixed(3)} V</td></tr>
-    `;
+    tbody.innerHTML = branches.map(b => {
+        const isOver = b.P > Pmax;
+        const currStr = b.isGalvano ? `${(b.I * 1000).toFixed(3)} mA` : `${b.I.toFixed(4)} A`;
+        const fireBadge = isOver ? ' 🔥' : '';
+        return `<tr class="${isOver ? 'overloaded-row' : ''}">
+            <td><strong>${b.name}${fireBadge}</strong></td>
+            <td>${currStr}</td>
+            <td>${Math.abs(b.U).toFixed(3)} V</td>
+            <td>${b.P.toFixed(3)} W</td>
+        </tr>`;
+    }).join('');
 
+    // 5. CẬP NHẬT LỜI GIẢI CHI TIẾT
     document.getElementById('sys-eq1').innerHTML = `I<sub>1</sub> - I<sub>2</sub> - I<sub>5</sub> = 0`;
     document.getElementById('sys-eq2').innerHTML = `I<sub>3</sub> - I<sub>4</sub> + I<sub>5</sub> = 0`;
     document.getElementById('sys-eq3').innerHTML = `${R1}*I<sub>1</sub> - ${R3}*I<sub>3</sub> + ${R5}*I<sub>5</sub> = 0`;
@@ -457,32 +559,6 @@ function computeWheatstoneBridge() {
     document.getElementById('step-i5').textContent = I5.toFixed(5);
 }
 
-function startAnimationLoop() {
-    if (animationTimer) clearInterval(animationTimer);
-    animationTimer = setInterval(() => { triggerCurrentFlowPulse(); }, 2500);
-    triggerCurrentFlowPulse();
-}
-
-function triggerCurrentFlowPulse() {
-    if (isQuizMode) return; // Tạm ẩn xung dòng điện khi đang làm bài tập để không lộ chiều dòng I5
-    const tolerance = 1e-5; 
-    applyFlow('flow-input', currentStates.I_total > tolerance, true);
-    applyFlow('flow-r1', Math.abs(currentStates.I1) > tolerance, currentStates.I1 >= 0);
-    applyFlow('flow-r3', Math.abs(currentStates.I3) > tolerance, currentStates.I3 >= 0);
-    applyFlow('flow-r5', Math.abs(currentStates.I5) > tolerance, currentStates.I5 >= 0);
-    applyFlow('flow-r2', Math.abs(currentStates.I2) > tolerance, currentStates.I2 >= 0);
-    applyFlow('flow-r4', Math.abs(currentStates.I4) > tolerance, currentStates.I4 >= 0);
-    applyFlow('flow-output', currentStates.I_total > tolerance, true);
-}
-
-function applyFlow(elementId, isActive, isForward) {
-    const el = document.getElementById(elementId);
-    if (!el) return;
-    el.classList.remove('active-forward', 'active-reverse');
-    void el.offsetWidth; 
-    if (isActive) el.classList.add(isForward ? 'active-forward' : 'active-reverse');
-}
-
 function loadPreset() {
     setQuizState(false);
     document.getElementById('vs').value = 12;
@@ -490,7 +566,7 @@ function loadPreset() {
     document.getElementById('r2').value = 100; document.getElementById('r2-slider').value = 100;
     document.getElementById('r3').value = 150; document.getElementById('r3-slider').value = 150;
     document.getElementById('r4').value = 150; document.getElementById('r4-slider').value = 150;
-    document.getElementById('r5').value = 282; document.getElementById('r5-slider').value = 282;
+    document.getElementById('r5').value = 220; document.getElementById('r5-slider').value = 220;
     computeWheatstoneBridge();
 }
 
