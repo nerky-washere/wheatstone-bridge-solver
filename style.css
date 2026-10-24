@@ -299,3 +299,11 @@ input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-o
     opacity: 0.35;
     transition: filter 0.3s ease, opacity 0.3s ease;
 }
+/* Căn giữa dòng ghi chú tốc độ hạt */
+.voltage-legend span[data-i18n="particle_hint"] {
+    width: 100%;
+    display: block;
+    text-align: center;
+    margin-top: 8px;
+    opacity: 0.85;
+}
