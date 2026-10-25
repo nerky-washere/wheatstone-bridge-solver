@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wheatstone Bridge Engine | Interactive Physics Lab</title>
+    <title>Wheatstone Bridge Engine | Cyber-Physical & C++ Lab</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -31,6 +31,7 @@
         </header>
 
         <main class="dashboard-grid">
+            <!-- BẢNG ĐIỀU KHIỂN BÊN TRÁI -->
             <section class="panel control-panel">
                 <div class="panel-header">
                     <h2 data-i18n="circuit_params">Circuit Parameters</h2>
@@ -38,6 +39,7 @@
                         <button id="preset-balanced" class="preset-btn" data-i18n="load_preset">Load Balanced</button>
                         <button id="open-theory-btn" class="preset-btn theory-btn" data-i18n="theory_btn">📖 Cheat Sheet</button>
                         <button id="start-quiz-btn" class="preset-btn quiz-btn" data-i18n="quiz_btn">🎯 Practice Quiz</button>
+                        <button id="open-cpp-btn" class="preset-btn cpp-btn" data-i18n="cpp_core_btn">⚙️ C++ Core (main.cpp)</button>
                     </div>
                 </div>
 
@@ -71,8 +73,8 @@
                         <div class="label-row"><label for="r3" data-i18n="r3_label">R3 [Ω]</label><input type="number" id="r3" value="150" step="1"></div>
                         <input type="range" id="r3-slider" min="1" max="1000" value="150" class="slider">
                     </div>
-                    <div class="interactive-input-group">
-                        <div class="label-row"><label for="r4" data-i18n="r4_label">R4 [Ω]</label><input type="number" id="r4" value="150" step="1"></div>
+                    <div class="interactive-input-group" id="r4-group-card">
+                        <div class="label-row"><label for="r4" data-i18n="r4_label">R4 [Ω]</label><input type="number" id="r4" value="150" step="0.1"></div>
                         <input type="range" id="r4-slider" min="1" max="1000" value="150" class="slider">
                     </div>
                     <div class="interactive-input-group full-width">
@@ -80,12 +82,170 @@
                         <input type="range" id="r5-slider" min="1" max="1000" value="220" class="slider">
                     </div>
                 </div>
+
+                <!-- ============ NÂNG CẤP 2: CYBER-PHYSICAL SENSOR & NOISE LAB ============ -->
+                <section class="sensor-panel" id="sensor-panel">
+                    <button class="sensor-panel-toggle" id="sensor-panel-toggle" type="button" aria-expanded="true" aria-controls="sensor-panel-body">
+                        <span data-i18n="sensor_panel_title">📡 Sensor &amp; Lab Mode (Cyber-Physical Extension)</span>
+                        <span class="sensor-chevron" id="sensor-chevron">▾</span>
+                    </button>
+
+                    <div class="sensor-panel-body" id="sensor-panel-body">
+                        <p class="sensor-desc" data-i18n="sensor_desc">
+                            In real instrumentation, R4 is not a fixed resistor: it is a physical transducer exposed to temperature or mechanical strain.
+                        </p>
+
+                        <div class="sensor-mode-row">
+                            <label for="sensor-mode" data-i18n="sensor_mode_label">Operation Mode on Branch R4</label>
+                            <select id="sensor-mode" class="styled-select">
+                                <option value="none" data-i18n="sensor_mode_none">Mode 1 — Standard Fixed Resistor (Default)</option>
+                                <option value="ntc" data-i18n="sensor_mode_ntc">Mode 2 — Smart Building HVAC: NTC Thermistor</option>
+                                <option value="strain" data-i18n="sensor_mode_strain">Mode 3 — Electric Race Car Telemetry: Strain Gauge (FSE)</option>
+                            </select>
+                        </div>
+
+                        <!-- MODE 2: NTC THERMISTOR -->
+                        <div class="sensor-block" id="sensor-block-ntc" style="display: none;">
+                            <div class="sensor-formula" data-i18n="ntc_formula">R4(T) = R0 · exp[ B · (1/(T+273.15) − 1/(T0+273.15)) ]</div>
+                            <div class="sensor-sweep">
+                                <div class="label-row">
+                                    <label for="ntc-temp" data-i18n="ntc_temp_label">Ambient Temperature T [°C]</label>
+                                    <input type="number" id="ntc-temp" value="25" step="0.5" min="-10" max="60">
+                                </div>
+                                <input type="range" id="ntc-temp-slider" min="-10" max="60" value="25" step="0.5" class="slider">
+                            </div>
+                            <div class="sensor-params-grid">
+                                <div class="sensor-param">
+                                    <label for="ntc-r0" data-i18n="ntc_r0_label">R0 @ 25°C [Ω]</label>
+                                    <input type="number" id="ntc-r0" value="100" step="10" min="1">
+                                </div>
+                                <div class="sensor-param">
+                                    <label for="ntc-beta" data-i18n="ntc_beta_label">B constant [K]</label>
+                                    <input type="number" id="ntc-beta" value="3950" step="50" min="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MODE 3: STRAIN GAUGE (FSE TELEMETRY) -->
+                        <div class="sensor-block" id="sensor-block-strain" style="display: none;">
+                            <div class="sensor-formula" data-i18n="strain_formula">R4(ε) = R_nom · (1 + GF · ε),  ε = με × 10⁻⁶</div>
+                            <div class="sensor-sweep">
+                                <div class="label-row">
+                                    <label for="strain-ue" data-i18n="strain_ue_label">Mechanical Strain ε [με]</label>
+                                    <input type="number" id="strain-ue" value="0" step="50" min="-5000" max="5000">
+                                </div>
+                                <input type="range" id="strain-ue-slider" min="-5000" max="5000" value="0" step="50" class="slider">
+                            </div>
+                            <div class="sensor-params-grid">
+                                <div class="sensor-param">
+                                    <label for="strain-rnom" data-i18n="strain_rnom_label">R_nominal [Ω]</label>
+                                    <select id="strain-rnom" class="styled-select">
+                                        <option value="120">120 Ω (Standard Foil Gauge)</option>
+                                        <option value="350" selected>350 Ω (High-Precision Telemetry)</option>
+                                    </select>
+                                </div>
+                                <div class="sensor-param">
+                                    <label for="strain-gf" data-i18n="strain_gf_label">Gauge Factor (GF)</label>
+                                    <input type="number" id="strain-gf" value="2.0" step="0.1" min="0.1">
+                                </div>
+                                <div class="sensor-param">
+                                    <label for="strain-gain" data-i18n="strain_gain_label">Instr. Amp Gain (G)</label>
+                                    <input type="number" id="strain-gain" value="100" step="10" min="1">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- LIVE TRANSDUCER READOUT -->
+                        <div class="sensor-readout" id="sensor-readout" style="display: none;">
+                            <div class="sensor-readout-row">
+                                <span data-i18n="sensor_live_r4">Live transducer resistance R4</span>
+                                <strong id="sensor-r4-value">—</strong>
+                            </div>
+                            <div class="sensor-readout-row">
+                                <span data-i18n="sensor_signal">Bridge differential signal V_MN (U5)</span>
+                                <strong id="sensor-vmn-value">—</strong>
+                            </div>
+                            <div class="sensor-readout-row" id="sensor-gain-row" style="display: none;">
+                                <span data-i18n="sensor_gain_out">Amplified output V_out = G · V_MN</span>
+                                <strong id="sensor-gain-value">—</strong>
+                            </div>
+                            <div class="sensor-verdict" id="sensor-verdict">—</div>
+                            <button id="sensor-balance-btn" type="button" class="sensor-balance-btn" data-i18n="sensor_balance_btn">⚖️ Null the bridge at nominal (R1=R2=R3)</button>
+                        </div>
+
+                        <!-- SIMULATED NOISE & LAB ERROR CHECK -->
+                        <div class="lab-noise-block">
+                            <label class="noise-switch">
+                                <input type="checkbox" id="noise-enable">
+                                <span data-i18n="noise_enable_label">🔀 Simulate Sensor Noise (±1% ~ ±5%) &amp; Lab Error Check</span>
+                            </label>
+
+                            <div class="sensor-params-grid" id="noise-params" style="display: none;">
+                                <div class="sensor-param">
+                                    <label for="noise-pct" data-i18n="noise_pct_label">Noise amplitude [± %]</label>
+                                    <input type="number" id="noise-pct" value="2" step="0.5" min="0.5" max="15">
+                                </div>
+                                <div class="sensor-param">
+                                    <label for="noise-window" data-i18n="noise_window_label">Moving-average window [N]</label>
+                                    <input type="number" id="noise-window" value="16" step="1" min="1" max="200">
+                                </div>
+                                <div class="sensor-param">
+                                    <label for="adc-bits" data-i18n="adc_bits_label">ADC resolution</label>
+                                    <select id="adc-bits" class="styled-select">
+                                        <option value="0" data-i18n="adc_ideal">Ideal (no quantisation)</option>
+                                        <option value="10">10-bit ADC</option>
+                                        <option value="12" selected>12-bit ADC</option>
+                                        <option value="16">16-bit ADC</option>
+                                    </select>
+                                </div>
+                                <div class="sensor-param" style="justify-content: flex-end;">
+                                    <button id="resample-noise-btn" type="button" class="sensor-balance-btn" data-i18n="noise_resample_btn">🔄 Resample ADC</button>
+                                </div>
+                            </div>
+
+                            <div class="lab-card" id="lab-card">
+                                <div class="lab-card-title" data-i18n="lab_card_title">🔬 Theory vs. Measurement Verification</div>
+                                <div class="lab-row">
+                                    <span data-i18n="lab_theory">V_MN Theory (C++ Gauss Solver)</span>
+                                    <strong id="lab-theory">—</strong>
+                                </div>
+                                <div class="lab-row">
+                                    <span data-i18n="lab_measured">V_MN Measured (with sensor noise)</span>
+                                    <strong id="lab-measured">—</strong>
+                                </div>
+                                <div class="lab-row">
+                                    <span id="lab-filtered-label" data-i18n="lab_filtered">Moving-average filtered</span>
+                                    <strong id="lab-filtered">—</strong>
+                                </div>
+                                <div class="lab-row">
+                                    <span data-i18n="lab_err_raw">Relative Error |% Error| (Raw)</span>
+                                    <strong id="lab-err-raw">—</strong>
+                                </div>
+                                <div class="lab-row">
+                                    <span data-i18n="lab_err_filtered">Relative Error |% Error| (Filtered)</span>
+                                    <strong id="lab-err-filtered">—</strong>
+                                </div>
+                                <svg class="lab-spark" id="lab-spark" viewBox="0 0 300 54" preserveAspectRatio="none">
+                                    <line id="spark-theory-line" x1="0" y1="27" x2="300" y2="27" class="spark-theory" />
+                                    <polyline id="spark-trace" class="spark-trace" points="" />
+                                </svg>
+                                <div class="lab-note" id="lab-note" data-i18n="lab_note_off">Enable noise to compare calculated physics against a noisy instrument.</div>
+                            </div>
+                        </div>
+
+                        <div class="sensor-lock-overlay" id="sensor-lock-overlay">
+                            <span data-i18n="sensor_locked">🔒 Locked during Practice Quiz</span>
+                        </div>
+                    </div>
+                </section>
+
                 <div class="notes-container">
                     <label for="lab-notes" data-i18n="lab_notes_label">📝 Lab Notes</label>
                     <textarea id="lab-notes" data-i18n-placeholder="lab_notes_placeholder" placeholder="Type formulas..."></textarea>
                 </div>
             </section>
 
+            <!-- BẢNG MÔ PHỎNG & KẾT QUẢ BÊN PHẢI -->
             <section class="panel visual-panel">
                 <div class="circuit-viewport">
                     <svg id="bridge-svg" viewBox="0 0 520 280" width="100%" height="100%">
@@ -116,7 +276,7 @@
                         <text x="170" y="215" text-anchor="middle" class="svg-label">R3</text>
                         <text x="245" y="144" text-anchor="middle" class="svg-label">R5</text>
                         <text x="340" y="75" text-anchor="middle" class="svg-label">R2</text>
-                        <text x="340" y="215" text-anchor="middle" class="svg-label">R4</text>
+                        <text id="svg-r4-label" x="340" y="215" text-anchor="middle" class="svg-label">R4</text>
 
                         <!-- Biểu tượng Cháy / Quá nhiệt -->
                         <text id="fire-r1" x="170" y="50" text-anchor="middle" class="fire-icon" style="display: none;">🔥</text>
@@ -148,7 +308,7 @@
                         <div class="legend-gradient"></div>
                         <span id="legend-vs-max">12V (A)</span>
                     </div>
-                    <span data-i18n="particle_hint" style="font-size: 0.75rem;">⚡ Dot speed ∝ Current (I)</span>
+                    <span data-i18n="particle_hint" style="font-size: 0.75rem;">⚡ Dot speed &amp; size ∝ Current (I)</span>
                 </div>
 
                 <!-- Cảnh báo Quá tải Công suất -->
@@ -163,7 +323,7 @@
                         <h3 data-i18n="quiz_title">🎯 Practice Challenge</h3>
                         <button id="exit-quiz-btn" class="quiz-action-btn" data-i18n="quiz_exit" style="padding: 4px 10px; font-size: 0.75rem;">Exit Quiz</button>
                     </div>
-                    <p class="quiz-desc" data-i18n="quiz_desc">Results & heatmap are hidden! Calculate the circuit parameters using the random values on the left and enter your answers below (±2% tolerance):</p>
+                    <p class="quiz-desc" data-i18n="quiz_desc">Results &amp; heatmap are hidden! Calculate the circuit parameters using the random values on the left and enter your answers below (±2% tolerance):</p>
                     
                     <div class="quiz-inputs-grid">
                         <div class="quiz-input-box">
@@ -183,7 +343,7 @@
                     <div class="quiz-actions">
                         <button id="check-quiz-btn" class="quiz-action-btn primary" data-i18n="quiz_check">Check Answer</button>
                         <button id="new-quiz-btn" class="quiz-action-btn" data-i18n="quiz_new">🎲 New Problem</button>
-                        <button id="reveal-quiz-btn" class="quiz-action-btn" data-i18n="quiz_reveal">👁️ Give Up & Show Solution</button>
+                        <button id="reveal-quiz-btn" class="quiz-action-btn" data-i18n="quiz_reveal">👁️ Give Up &amp; Show Solution</button>
                     </div>
 
                     <div id="quiz-feedback" class="quiz-feedback"></div>
@@ -200,7 +360,7 @@
                         <div class="metric-item"><span data-i18n="vm_label">Node M Voltage</span><strong id="vc-result">0.00 V</strong></div>
                         <div class="metric-item"><span data-i18n="vn_label">Node N Voltage</span><strong id="vd-result">0.00 V</strong></div>
                         <div class="metric-item highlight-box"><span data-i18n="ig_label">Galvanometer Current</span><strong id="ig-result">0.00 mA</strong></div>
-                        <div class="metric-item"><span data-i18n="u5_label">Voltage Drop</span><strong id="u5-result">0.00 V</strong></div>
+                        <div class="metric-item"><span data-i18n="u5_label">Voltage Drop (U5)</span><strong id="u5-result">0.00 V</strong></div>
                     </div>
 
                     <div class="detailed-table-container">
@@ -221,7 +381,7 @@
                     <div id="solution-panel" class="step-by-step-panel">
                         <p><strong data-i18n="step_1_title">Step 1: System of Equations</strong></p>
                         <div class="equation-block">
-                            <div class="theory-eq" data-i18n="kcl_nodes">KCL at Nodes M & N:</div>
+                            <div class="theory-eq" data-i18n="kcl_nodes">KCL at Nodes M &amp; N:</div>
                             <div class="sub-eq">Node M: I<sub>1</sub> - I<sub>2</sub> - I<sub>5</sub> = 0</div>
                             <div class="sub-eq" style="margin-bottom: 12px;">Node N: I<sub>3</sub> - I<sub>4</sub> + I<sub>5</sub> = 0</div>
                             <div class="theory-eq" data-i18n="kvl_loops">KVL for 3 Loops:</div>
@@ -237,6 +397,13 @@
                             <div id="sys-eq4" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
                             <div id="sys-eq5" class="equation-line" style="background: transparent; padding: 2px 0;"></div>
                         </div>
+                        <p><strong data-i18n="step_25_title">Step 2.5: Augmented Matrix [A | b] &amp; Partial Pivoting (main.cpp)</strong></p>
+                        <div class="equation-block">
+                            <div class="theory-eq" data-i18n="step_25_desc">Exactly the 5×6 array passed to solveGauss() in main.cpp:</div>
+                            <div id="step-matrix-host" class="matrix-host"></div>
+                            <div class="theory-eq" style="margin-top: 10px;" data-i18n="step_25_pivot">Partial pivoting log (row swaps performed):</div>
+                            <div id="step-pivot-log" class="pivot-log"></div>
+                        </div>
                         <p><strong data-i18n="step_3_title">Step 3: Solved Branch Currents</strong></p>
                         <div class="equation-block" style="background: transparent; border: none; padding: 0;">
                             <div class="equation-line">
@@ -246,6 +413,16 @@
                                 I<sub>4</sub> = <span id="step-i4"></span> A<br>
                                 I<sub>5</sub> = <span id="step-i5"></span> A
                             </div>
+                        </div>
+                        <p><strong data-i18n="step_4_title">Step 4: Law of Conservation of Energy Verification</strong></p>
+                        <div class="equation-block">
+                            <div class="theory-eq" data-i18n="step_4_desc">The solution is only physically valid if generated power equals dissipated power:</div>
+                            <div class="sub-eq">P<sub>source</sub> = V<sub>s</sub> · I<sub>total</sub> = <span id="step-psource"></span> W</div>
+                            <div class="sub-eq">Σ P<sub>i</sub> = Σ I<sub>i</sub><sup>2</sup> · R<sub>i</sub> = <span id="step-pconsumed"></span> W</div>
+                            <div class="sub-eq" id="step-presidual-row">
+                                <span data-i18n="step_4_residual">Absolute residual |ΔP|</span> = <span id="step-presidual"></span> W
+                            </div>
+                            <div id="step-power-verdict" class="power-verdict"></div>
                         </div>
                     </div>
                 </div>
@@ -274,7 +451,7 @@
                 <li data-i18n="modal_l7"><strong>Bước 5:</strong> Áp dụng định luật Ôm để tìm I, U.</li>
             </ul>
             <h4 data-i18n="modal_h3">3. Phương pháp giải mạch cầu không cân bằng (Khuyên dùng)</h4>
-            <p data-i18n="modal_p3">Sử dụng định luật Kiếc-sôp (Kirchhoff 1 & 2):</p>
+            <p data-i18n="modal_p3">Sử dụng định luật Kiếc-sôp (Kirchhoff 1 &amp; 2):</p>
             <ul>
                 <li data-i18n="modal_l8"><strong>Bước 1:</strong> Đặt ẩn cường độ dòng điện trên các nhánh (I1 đến I5). Dùng quy tắc nút (KCL) để lập phương trình.</li>
                 <li data-i18n="modal_l9"><strong>Bước 2:</strong> Viết phương trình hiệu điện thế (KVL) theo các vòng kín của mạch.</li>
@@ -282,6 +459,240 @@
             </ul>
         </div>
     </div>
+
+    <!-- ============ NÂNG CẤP 1: C++ CORE ENGINE & ARCHITECTURE INSPECTOR ============ -->
+    <div id="cpp-modal" class="theory-modal cpp-modal">
+        <div class="modal-content cpp-modal-content">
+            <button id="close-cpp-btn" class="close-modal-btn">X</button>
+            <h3 data-i18n="cpp_modal_title">⚙️ C++ Core Engine &amp; Architecture Inspector</h3>
+            <p class="cpp-modal-sub" data-i18n="cpp_modal_sub">
+                This application runs no 2×2 shortcut. Every value is computed by the exact 5×6 Gaussian Elimination with Partial Pivoting algorithm hand-written in main.cpp.
+            </p>
+
+            <div class="cpp-tabs" role="tablist">
+                <button class="cpp-tab active" data-tab="trace" role="tab" data-i18n="cpp_tab1">Tab 1 — Live 5×6 Gaussian Trace</button>
+                <button class="cpp-tab" data-tab="cli" role="tab" data-i18n="cpp_tab2">Tab 2 — C++ CLI Terminal Simulator</button>
+                <button class="cpp-tab" data-tab="source" role="tab" data-i18n="cpp_tab3">Tab 3 — Hand-Written C++ Source &amp; Authorship</button>
+            </div>
+
+            <!-- TAB 1: LIVE GAUSSIAN TRACE -->
+            <div class="cpp-pane active" id="cpp-pane-trace">
+                <div class="cpp-section-label" data-i18n="cpp_trace_params">Current circuit parameters fed into solveGauss()</div>
+                <div id="cpp-params" class="cpp-params"></div>
+
+                <div class="cpp-section-label" data-i18n="cpp_trace_initial">1 — Initial augmented matrix [A | b] (5 rows × 6 cols)</div>
+                <div id="cpp-matrix-initial" class="matrix-host"></div>
+
+                <div class="cpp-section-label" data-i18n="cpp_trace_pivot">2 — Partial pivoting: abs(matrix[r][c]) &gt; abs(matrix[maxRow][c])</div>
+                <div id="cpp-pivot-log" class="pivot-log"></div>
+
+                <div class="cpp-section-label" data-i18n="cpp_trace_upper">3 — Upper-triangular matrix after forward elimination</div>
+                <div id="cpp-matrix-upper" class="matrix-host"></div>
+
+                <div class="cpp-section-label" data-i18n="cpp_trace_back">4 — Back substitution → branch currents I1..I5</div>
+                <div id="cpp-back-sub" class="back-sub-host"></div>
+
+                <div class="cpp-section-label" data-i18n="cpp_trace_power">5 — Power conservation check (main.cpp lines 105–145)</div>
+                <div id="cpp-power-check" class="power-check-host"></div>
+            </div>
+
+            <!-- TAB 2: CLI TERMINAL SIMULATOR -->
+            <div class="cpp-pane" id="cpp-pane-cli">
+                <div class="cpp-section-label" data-i18n="cpp_cli_label">Exact stdout of compiled main.cpp for the current parameters</div>
+                <div class="terminal-window">
+                    <div class="terminal-bar">
+                        <span class="term-dot red"></span><span class="term-dot amber"></span><span class="term-dot green"></span>
+                        <span class="terminal-title">main.exe — Wheatstone Bridge C++ CLI</span>
+                    </div>
+                    <pre class="terminal-body" id="terminal-body"></pre>
+                </div>
+                <div class="cpp-actions">
+                    <button id="run-cli-btn" class="cpp-action-btn primary" data-i18n="cpp_run_btn">▶ Run C++ CLI Simulation</button>
+                    <button id="copy-cli-btn" class="cpp-action-btn" data-i18n="cpp_copy_cli_btn">📋 Copy C++ Output</button>
+                    <button id="download-cpp-btn" class="cpp-action-btn" data-i18n="cpp_download_btn">⬇ Download main.cpp</button>
+                </div>
+            </div>
+
+            <!-- TAB 3: SOURCE & AUTHORSHIP ARCHITECTURE -->
+            <div class="cpp-pane" id="cpp-pane-source">
+                <div class="author-badge">
+                    <div class="author-badge-title" data-i18n="arch_title">🏷️ Engineering Authorship &amp; System Architecture Statement</div>
+                    <div class="author-row">
+                        <span class="author-tag cpp" data-i18n="arch_cpp_tag">Core Mathematical &amp; Physics Engine (main.cpp) — 100% Hand-Written in C++ by Trinh Dinh Nhat Quang</span>
+                        <p data-i18n="arch_cpp_body">
+                            Independently formulated and implemented in C++ by Trinh Dinh Nhat Quang: 5×6 KCL/KVL linear system construction, Gaussian Elimination with Partial Pivoting (solveGauss), nodal potential derivation (V_M, V_N, V_MN), and rigorous verification of the Law of Conservation of Energy (P_source == P_consumed_total).
+                        </p>
+                    </div>
+                    <div class="author-row">
+                        <span class="author-tag web" data-i18n="arch_web_tag">Interactive Web UI &amp; Cyber-Physical Telemetry Visualization</span>
+                        <p data-i18n="arch_web_body">
+                            System architecture designed by Trinh Dinh Nhat Quang with AI-assisted frontend implementation (index.html, style.css, script.js), directly executing and visualizing the C++ mathematical core alongside transducer and sensor-noise models.
+                        </p>
+                    </div>
+                </div>
+                <div class="cpp-section-label" data-i18n="cpp_source_label">main.cpp — Hand-Written C++ Source Code</div>
+                <pre class="code-block"><code id="cpp-code-host"></code></pre>
+                <div class="cpp-actions">
+                    <button id="download-cpp-btn2" class="cpp-action-btn" data-i18n="cpp_download_btn">⬇ Download main.cpp</button>
+                    <button id="copy-cpp-btn2" class="cpp-action-btn" data-i18n="cpp_copy_btn">📋 Copy C++ Source</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nhúng nguyên văn mã nguồn main.cpp để hiển thị và tải về -->
+    <script type="text/plain" id="cpp-source-raw">
+#include <iostream>
+#include <iomanip>
+#include <cmath>
+
+using namespace std;
+
+// === GAUSS SOLVER WITH PARTIAL PIVOTING ===
+bool solveGauss(double matrix[5][6], double I[5], int N) {
+    for (int c = 0; c < N; c++) {
+        int maxRow = c;
+        for (int r = c + 1; r < N; r++) {
+            if (abs(matrix[r][c]) > abs(matrix[maxRow][c])) {
+                maxRow = r;
+            }
+        }
+
+        if (maxRow != c) {
+            for (int q = c; q <= N; q++) {
+                swap(matrix[c][q], matrix[maxRow][q]);
+            }
+        }
+
+        if (abs(matrix[c][c]) < 1e-9) {
+            return false;
+        }
+
+        for (int r = c + 1; r < N; r++) {
+            double factor = matrix[r][c] / matrix[c][c];
+            for (int q = c; q <= N; q++) {
+                matrix[r][q] -= factor * matrix[c][q];
+            }
+        }
+    }
+
+    for (int k = N - 1; k >= 0; k--) {
+        double sum = matrix[k][N];
+        for (int m = k + 1; m < N; m++) {
+            sum -= matrix[k][m] * I[m];
+        }
+        I[k] = sum / matrix[k][k];
+    }
+
+    return true;
+}
+
+int main() {
+    double R1, R2, R3, R4, R5, Vs;
+
+    cout << "================================================================" << endl;
+    cout << "                WHEATSTONE BRIDGE CIRCUIT SOLVER                " << endl;
+    cout << "================================================================" << endl;
+
+    // Display ASCII Circuit Schematic
+    cout << "                       CIRCUIT SCHEMATIC                        " << endl;
+    cout << "       +----------[ R1 ]----------+----------[ R2 ]----------+  " << endl;
+    cout << "       |                          |                          |  " << endl;
+    cout << "  o----+                          |                          +----o" << endl;
+    cout << " (+Vs) |                        [ R5 ]                       |   (GND)" << endl;
+    cout << "       |                          |                          |  " << endl;
+    cout << "       +----------[ R3 ]----------+----------[ R4 ]----------+  " << endl;
+    cout << "================================================================" << endl << endl;
+
+    // Prompt user for input values (Aligned)
+    cout << "Enter R1 (Ohm)  : "; cin >> R1;
+    cout << "Enter R2 (Ohm)  : "; cin >> R2;
+    cout << "Enter R3 (Ohm)  : "; cin >> R3;
+    cout << "Enter R4 (Ohm)  : "; cin >> R4;
+    cout << "Enter R5 (Ohm)  : "; cin >> R5;
+    cout << "Enter Vs (Volt) : "; cin >> Vs;
+
+    // Validate resistor and voltage values
+    if (R1 <= 0 || R2 <= 0 || R3 <= 0 || R4 <= 0 || R5 <= 0 || Vs <= 0) {
+        cout << "\n[Error]: All resistance values and source voltage must be greater than 0!" << endl;
+        return 1;
+    }
+
+    // Kirchhoff System Matrix Formulation (5x6)
+    // Cập nhật theo đúng Topology chuẩn: M giữa R1-R2, N giữa R3-R4, R5 nối M-N
+    double matrix[5][6] = {
+        { 1.0, -1.0,  0.0,  0.0, -1.0, 0.0 }, // KCL Node M: I1 - I2 - I5 = 0
+        { 0.0,  0.0,  1.0, -1.0,  1.0, 0.0 }, // KCL Node N: I3 - I4 + I5 = 0
+        {  R1,  0.0,  -R3,  0.0,   R5, 0.0 }, // KVL Vòng trái (A-M-N-A): R1*I1 - R3*I3 + R5*I5 = 0
+        { 0.0,  -R2,  0.0,   R4,   R5, 0.0 }, // KVL Vòng phải (M-B-N-M): -R2*I2 + R4*I4 + R5*I5 = 0
+        {  R1,   R2,  0.0,  0.0,  0.0,  Vs }  // KVL Nhánh trên (A-M-B): R1*I1 + R2*I2 = Vs
+    };
+
+    double I[5];
+    int N = 5;
+
+    // Solve system of equations
+    if (!solveGauss(matrix, I, N)) {
+        cout << "\n[Error]: Unable to solve system of equations (Singular matrix)!" << endl;
+        return 1;
+    }
+
+    // Derived Parameters Calculation
+    double I_total = I[0] + I[2]; // Dòng điện nguồn: I_total = I1 + I3
+    double Req = Vs / I_total;
+
+    // Node voltages (Khớp biến M, N với frontend)
+    double V_M = Vs - (I[0] * R1);
+    double V_N = Vs - (I[2] * R3);
+    double V_MN = V_M - V_N;
+
+    // Power consumption calculations
+    double P[5];
+    double P_consumed_total = 0;
+    for (int i = 0; i < 5; i++) {
+        P[i] = I[i] * I[i] * (i == 0 ? R1 : i == 1 ? R2 : i == 2 ? R3 : i == 3 ? R4 : R5);
+        P_consumed_total += P[i];
+    }
+    double P_source = Vs * I_total;
+
+    // Display output results
+    cout << "\n================================================================" << endl;
+    cout << "                        ANALYSIS RESULTS                        " << endl;
+    cout << "================================================================" << endl;
+    cout << fixed << setprecision(4);
+
+    cout << "BRANCH CURRENTS:" << endl;
+    for (int i = 0; i < N; i++) {
+        cout << " - I" << i + 1 << " = " << I[i] << " A (" << I[i] * 1000 << " mA)" << endl;
+    }
+
+    cout << "\nNODE VOLTAGES & BRIDGE DIFFERENTIAL:" << endl;
+    cout << " - Node M Potential (V_M) = " << V_M << " V" << endl;
+    cout << " - Node N Potential (V_N) = " << V_N << " V" << endl;
+    cout << " - Voltage Difference V_MN = " << V_MN << " V" << endl;
+
+    cout << "\nBRIDGE STATE:" << endl;
+    if (abs(I[4]) < 1e-6) {
+        cout << " -> BALANCED WHEATSTONE BRIDGE (I5 = 0 A, V_MN = 0 V)" << endl;
+    } else {
+        cout << " -> UNBALANCED WHEATSTONE BRIDGE" << endl;
+    }
+
+    cout << "\nTOTAL CIRCUIT & ENERGY PARAMETERS:" << endl;
+    cout << " - Total Current (I_total) = " << I_total << " A" << endl;
+    cout << " - Equivalent Resistance (Req) = " << Req << " Ohm" << endl;
+    cout << " - Source Power (P_source) = " << P_source << " Watt" << endl;
+    cout << " - Total Power Dissipating on Resistors = " << P_consumed_total << " Watt" << endl;
+
+    if (abs(P_source - P_consumed_total) < 1e-4) {
+        cout << " -> Power Conservation Check: PASSED (100% Exact)" << endl;
+    }
+
+    cout << "================================================================" << endl;
+
+    return 0;
+}
+    </script>
 
     <script src="script.js"></script>
 </body>
