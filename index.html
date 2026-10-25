@@ -83,158 +83,111 @@
                     </div>
                 </div>
 
-                <!-- ============ NÂNG CẤP 2: CYBER-PHYSICAL SENSOR & NOISE LAB ============ -->
+                <!-- ============ NÂNG CẤP 2 (RÚT GỌN CHO VẬT LÝ 11): ỨNG DỤNG CẢM BIẾN THỰC TẾ ============ -->
                 <section class="sensor-panel" id="sensor-panel">
-                    <button class="sensor-panel-toggle" id="sensor-panel-toggle" type="button" aria-expanded="true" aria-controls="sensor-panel-body">
-                        <span data-i18n="sensor_panel_title">📡 Sensor &amp; Lab Mode (Cyber-Physical Extension)</span>
-                        <span class="sensor-chevron" id="sensor-chevron">▾</span>
+                    <button class="sensor-panel-toggle" id="sensor-panel-toggle" type="button" aria-expanded="false" aria-controls="sensor-panel-body">
+                        <span data-i18n="sensor_panel_title">📡 Ứng Dụng Thực Tế: Khi R4 là Cảm Biến (Mở rộng)</span>
+                        <span class="sensor-chevron collapsed" id="sensor-chevron">▾</span>
                     </button>
 
-                    <div class="sensor-panel-body" id="sensor-panel-body">
+                    <!-- Thu gọn mặc định (class="sensor-panel-body collapsed") để học sinh lớp 11 không bị ngợp -->
+                    <div class="sensor-panel-body collapsed" id="sensor-panel-body">
                         <p class="sensor-desc" data-i18n="sensor_desc">
-                            In real instrumentation, R4 is not a fixed resistor: it is a physical transducer exposed to temperature or mechanical strain.
+                            Trong thực tế, R4 được thay bằng cảm biến có điện trở thay đổi theo nhiệt độ hoặc lực kéo/nén.
                         </p>
 
                         <div class="sensor-mode-row">
-                            <label for="sensor-mode" data-i18n="sensor_mode_label">Operation Mode on Branch R4</label>
+                            <label for="sensor-mode" data-i18n="sensor_mode_label">Chọn vai trò của điện trở R4:</label>
                             <select id="sensor-mode" class="styled-select">
-                                <option value="none" data-i18n="sensor_mode_none">Mode 1 — Standard Fixed Resistor (Default)</option>
-                                <option value="ntc" data-i18n="sensor_mode_ntc">Mode 2 — Smart Building HVAC: NTC Thermistor</option>
-                                <option value="strain" data-i18n="sensor_mode_strain">Mode 3 — Electric Race Car Telemetry: Strain Gauge (FSE)</option>
+                                <option value="none" data-i18n="sensor_mode_none">1 — Điện trở cố định (Bài tập Vật lý 11 chuẩn)</option>
+                                <option value="ntc" data-i18n="sensor_mode_ntc">2 — Cảm biến Nhiệt độ NTC (Tự động bật/tắt điều hòa)</option>
+                                <option value="strain" data-i18n="sensor_mode_strain">3 — Cảm biến Lực kéo/nén (Đo biến dạng khung xe)</option>
                             </select>
                         </div>
 
-                        <!-- MODE 2: NTC THERMISTOR -->
+                        <!-- CHẾ ĐỘ 2: CẢM BIẾN NHIỆT ĐỘ (CHỈ GIỮ 1 THANH TRƯỢT NHIỆT ĐỘ) -->
                         <div class="sensor-block" id="sensor-block-ntc" style="display: none;">
-                            <div class="sensor-formula" data-i18n="ntc_formula">R4(T) = R0 · exp[ B · (1/(T+273.15) − 1/(T0+273.15)) ]</div>
+                            <div class="sensor-formula">Quy luật: Nhiệt độ T tăng ➔ Điện trở R4 giảm ➔ Cầu lệch (U5 ≠ 0)</div>
                             <div class="sensor-sweep">
                                 <div class="label-row">
-                                    <label for="ntc-temp" data-i18n="ntc_temp_label">Ambient Temperature T [°C]</label>
+                                    <label for="ntc-temp" data-i18n="ntc_temp_label">Nhiệt độ môi trường T [°C]</label>
                                     <input type="number" id="ntc-temp" value="25" step="0.5" min="-10" max="60">
                                 </div>
                                 <input type="range" id="ntc-temp-slider" min="-10" max="60" value="25" step="0.5" class="slider">
                             </div>
-                            <div class="sensor-params-grid">
-                                <div class="sensor-param">
-                                    <label for="ntc-r0" data-i18n="ntc_r0_label">R0 @ 25°C [Ω]</label>
-                                    <input type="number" id="ntc-r0" value="100" step="10" min="1">
-                                </div>
-                                <div class="sensor-param">
-                                    <label for="ntc-beta" data-i18n="ntc_beta_label">B constant [K]</label>
-                                    <input type="number" id="ntc-beta" value="3950" step="50" min="1">
-                                </div>
-                            </div>
+                            <!-- Ẩn các hằng số mặc định để code JS vẫn tính toán bình thường mà không làm rối UI -->
+                            <input type="hidden" id="ntc-r0" value="100">
+                            <input type="hidden" id="ntc-beta" value="3950">
                         </div>
 
-                        <!-- MODE 3: STRAIN GAUGE (FSE TELEMETRY) -->
+                        <!-- CHẾ ĐỘ 3: CẢM BIẾN LỰC BIẾN DẠNG (CHỈ GIỮ 1 THANH TRƯỢT KÉO/NÉN) -->
                         <div class="sensor-block" id="sensor-block-strain" style="display: none;">
-                            <div class="sensor-formula" data-i18n="strain_formula">R4(ε) = R_nom · (1 + GF · ε),  ε = με × 10⁻⁶</div>
+                            <div class="sensor-formula">Quy luật (R = ρ·l/S): Kéo dãn (+) ➔ R4 tăng | Nén (−) ➔ R4 giảm</div>
                             <div class="sensor-sweep">
                                 <div class="label-row">
-                                    <label for="strain-ue" data-i18n="strain_ue_label">Mechanical Strain ε [με]</label>
+                                    <label for="strain-ue" data-i18n="strain_ue_label">Độ biến dạng kéo / nén [με]</label>
                                     <input type="number" id="strain-ue" value="0" step="50" min="-5000" max="5000">
                                 </div>
                                 <input type="range" id="strain-ue-slider" min="-5000" max="5000" value="0" step="50" class="slider">
                             </div>
-                            <div class="sensor-params-grid">
-                                <div class="sensor-param">
-                                    <label for="strain-rnom" data-i18n="strain_rnom_label">R_nominal [Ω]</label>
-                                    <select id="strain-rnom" class="styled-select">
-                                        <option value="120">120 Ω (Standard Foil Gauge)</option>
-                                        <option value="350" selected>350 Ω (High-Precision Telemetry)</option>
-                                    </select>
-                                </div>
-                                <div class="sensor-param">
-                                    <label for="strain-gf" data-i18n="strain_gf_label">Gauge Factor (GF)</label>
-                                    <input type="number" id="strain-gf" value="2.0" step="0.1" min="0.1">
-                                </div>
-                                <div class="sensor-param">
-                                    <label for="strain-gain" data-i18n="strain_gain_label">Instr. Amp Gain (G)</label>
-                                    <input type="number" id="strain-gain" value="100" step="10" min="1">
-                                </div>
-                            </div>
+                            <!-- Ẩn các hằng số mặc định -->
+                            <input type="hidden" id="strain-rnom" value="350">
+                            <input type="hidden" id="strain-gf" value="2.0">
+                            <input type="hidden" id="strain-gain" value="100">
                         </div>
 
-                        <!-- LIVE TRANSDUCER READOUT -->
+                        <!-- KẾT QUẢ CẢM BIẾN GỌN GÀNG -->
                         <div class="sensor-readout" id="sensor-readout" style="display: none;">
                             <div class="sensor-readout-row">
-                                <span data-i18n="sensor_live_r4">Live transducer resistance R4</span>
+                                <span data-i18n="sensor_live_r4">Điện trở cảm biến R4 hiện tại</span>
                                 <strong id="sensor-r4-value">—</strong>
                             </div>
                             <div class="sensor-readout-row">
-                                <span data-i18n="sensor_signal">Bridge differential signal V_MN (U5)</span>
+                                <span data-i18n="sensor_signal">Hiệu điện thế lệch cầu U5 (V_MN)</span>
                                 <strong id="sensor-vmn-value">—</strong>
                             </div>
-                            <div class="sensor-readout-row" id="sensor-gain-row" style="display: none;">
-                                <span data-i18n="sensor_gain_out">Amplified output V_out = G · V_MN</span>
-                                <strong id="sensor-gain-value">—</strong>
-                            </div>
                             <div class="sensor-verdict" id="sensor-verdict">—</div>
-                            <button id="sensor-balance-btn" type="button" class="sensor-balance-btn" data-i18n="sensor_balance_btn">⚖️ Null the bridge at nominal (R1=R2=R3)</button>
+                            <button id="sensor-balance-btn" type="button" class="sensor-balance-btn" data-i18n="sensor_balance_btn">⚖️ Cân bằng lại mạch cầu (Đưa U5 về 0V)</button>
                         </div>
 
-                        <!-- SIMULATED NOISE & LAB ERROR CHECK -->
+                        <!-- ĐỐI CHIẾU LÝ THUYẾT & SAI SỐ ĐO THỰC TẾ (TỐI GIẢN 3 DÒNG) -->
                         <div class="lab-noise-block">
                             <label class="noise-switch">
                                 <input type="checkbox" id="noise-enable">
-                                <span data-i18n="noise_enable_label">🔀 Simulate Sensor Noise (±1% ~ ±5%) &amp; Lab Error Check</span>
+                                <span data-i18n="noise_enable_label">🔀 Mô phỏng sai số đồng hồ đo thực tế (±2%)</span>
                             </label>
 
-                            <div class="sensor-params-grid" id="noise-params" style="display: none;">
-                                <div class="sensor-param">
-                                    <label for="noise-pct" data-i18n="noise_pct_label">Noise amplitude [± %]</label>
-                                    <input type="number" id="noise-pct" value="2" step="0.5" min="0.5" max="15">
-                                </div>
-                                <div class="sensor-param">
-                                    <label for="noise-window" data-i18n="noise_window_label">Moving-average window [N]</label>
-                                    <input type="number" id="noise-window" value="16" step="1" min="1" max="200">
-                                </div>
-                                <div class="sensor-param">
-                                    <label for="adc-bits" data-i18n="adc_bits_label">ADC resolution</label>
-                                    <select id="adc-bits" class="styled-select">
-                                        <option value="0" data-i18n="adc_ideal">Ideal (no quantisation)</option>
-                                        <option value="10">10-bit ADC</option>
-                                        <option value="12" selected>12-bit ADC</option>
-                                        <option value="16">16-bit ADC</option>
-                                    </select>
-                                </div>
-                                <div class="sensor-param" style="justify-content: flex-end;">
-                                    <button id="resample-noise-btn" type="button" class="sensor-balance-btn" data-i18n="noise_resample_btn">🔄 Resample ADC</button>
-                                </div>
-                            </div>
+                            <!-- Ẩn các thông số lọc phức tạp -->
+                            <input type="hidden" id="noise-pct" value="2">
+                            <input type="hidden" id="noise-window" value="16">
+                            <input type="hidden" id="adc-bits" value="0">
 
                             <div class="lab-card" id="lab-card">
-                                <div class="lab-card-title" data-i18n="lab_card_title">🔬 Theory vs. Measurement Verification</div>
+                                <div class="lab-card-title" data-i18n="lab_card_title">🔬 So Sánh Lý Thuyết &amp; Thực Hành</div>
                                 <div class="lab-row">
-                                    <span data-i18n="lab_theory">V_MN Theory (C++ Gauss Solver)</span>
+                                    <span data-i18n="lab_theory">U5 Lý thuyết (Tính từ C++)</span>
                                     <strong id="lab-theory">—</strong>
                                 </div>
                                 <div class="lab-row">
-                                    <span data-i18n="lab_measured">V_MN Measured (with sensor noise)</span>
+                                    <span data-i18n="lab_measured">U5 Thực đo (Có sai số ngẫu nhiên)</span>
                                     <strong id="lab-measured">—</strong>
                                 </div>
                                 <div class="lab-row">
-                                    <span id="lab-filtered-label" data-i18n="lab_filtered">Moving-average filtered</span>
-                                    <strong id="lab-filtered">—</strong>
-                                </div>
-                                <div class="lab-row">
-                                    <span data-i18n="lab_err_raw">Relative Error |% Error| (Raw)</span>
+                                    <span data-i18n="lab_err_raw">Độ lệch sai số tương đối |% Error|</span>
                                     <strong id="lab-err-raw">—</strong>
                                 </div>
-                                <div class="lab-row">
-                                    <span data-i18n="lab_err_filtered">Relative Error |% Error| (Filtered)</span>
-                                    <strong id="lab-err-filtered">—</strong>
+                                <!-- Ẩn các dòng lọc trung bình trượt & đồ thị phức tạp để giữ tương thích JS -->
+                                <div style="display: none;">
+                                    <span id="lab-filtered-label"></span><strong id="lab-filtered"></strong>
+                                    <strong id="lab-err-filtered"></strong>
+                                    <svg id="lab-spark"><line id="spark-theory-line"/><polyline id="spark-trace"/></svg>
                                 </div>
-                                <svg class="lab-spark" id="lab-spark" viewBox="0 0 300 54" preserveAspectRatio="none">
-                                    <line id="spark-theory-line" x1="0" y1="27" x2="300" y2="27" class="spark-theory" />
-                                    <polyline id="spark-trace" class="spark-trace" points="" />
-                                </svg>
-                                <div class="lab-note" id="lab-note" data-i18n="lab_note_off">Enable noise to compare calculated physics against a noisy instrument.</div>
+                                <div class="lab-note" id="lab-note" data-i18n="lab_note_off">Tích chọn ô trên để xem sự khác biệt giữa tính toán lý thuyết và số đo có sai số trong phòng thí nghiệm.</div>
                             </div>
                         </div>
 
                         <div class="sensor-lock-overlay" id="sensor-lock-overlay">
-                            <span data-i18n="sensor_locked">🔒 Locked during Practice Quiz</span>
+                            <span data-i18n="sensor_locked">🔒 Đã khóa trong chế độ Luyện Tập</span>
                         </div>
                     </div>
                 </section>
