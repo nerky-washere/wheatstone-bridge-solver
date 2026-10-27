@@ -521,5 +521,4 @@ input[type="number"]::-webkit-inner-spin-button, input[type="number"]::-webkit-o
     .terminal-body, .code-block { font-size: 0.62rem; }
     .cpp-action-btn, .sensor-balance-btn { width: 100%; }
 }
-/* Ẩn hoàn toàn khung Cảm biến & Thực nghiệm khỏi giao diện */
-#sensor-panel { display: none !important; }
+
